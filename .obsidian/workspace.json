@@ -35,7 +35,8 @@
               "title": "Skenario_Uji_Pengambilan_Data_ToF_36_Klip"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -113,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "tof_tools/README_PENGGUNAAN.md",
+                "file": "tof_tools/Skenario_Uji_Pengambilan_Data_ToF_36_Klip.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -132,7 +133,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "tof_tools/README_PENGGUNAAN.md",
+                "file": "tof_tools/Skenario_Uji_Pengambilan_Data_ToF_36_Klip.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -175,7 +176,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "tof_tools/README_PENGGUNAAN.md",
+                "file": "tof_tools/Skenario_Uji_Pengambilan_Data_ToF_36_Klip.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -213,10 +214,10 @@
       "copilot:Open Copilot Agent Chat": false
     }
   },
-  "active": "498304aadf7831c4",
+  "active": "36092ab011c8f7ed",
   "lastOpenFiles": [
-    "tof_tools/Skenario_Uji_Pengambilan_Data_ToF_36_Klip.md",
     "tof_tools/README_PENGGUNAAN.md",
+    "tof_tools/Skenario_Uji_Pengambilan_Data_ToF_36_Klip.md",
     "copilot/copilot-conversations/agent__Setiap_sesi_memiliki_`REF`,_tinggi,_pitch_terukur,_dan_parameter_driver@20261004_192858.md",
     "copilot/copilot-conversations",
     "tof_tools/PLAN_OVERVIEW.md",
