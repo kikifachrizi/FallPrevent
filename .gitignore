@@ -1,5 +1,25 @@
-/agents
-/claude
+# Editor / tools
+/.agents
+/.claude
+/.copilot
+/.obsidian
+/.vscode
 /copilot
-/obsidian
-/vscode
+
+# Python virtualenv (script di src/venvRos/*.py tetap ditrack)
+src/venvRos/bin/
+src/venvRos/lib/
+src/venvRos/lib64
+src/venvRos/include/
+src/venvRos/share/
+src/venvRos/pyvenv.cfg
+__pycache__/
+*.pyc
+
+# File lock LibreOffice
+.~lock.*#
+
+# ROS build output
+build/
+install/
+log/

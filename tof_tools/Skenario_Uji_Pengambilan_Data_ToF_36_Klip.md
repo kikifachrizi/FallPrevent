@@ -55,7 +55,14 @@ Skrip rekam dan urutan perintah lengkap: lihat **Bagian 8**.
 - Cahaya sekitar: ToF memakai IR 940 nm, jadi sinar matahari langsung berpotensi mengganggu *(hipotesis, belum diuji)*. Tutup jendela / rekam pada jam serupa, catat kondisi.
 - Hanya partisipan di dalam frame. Operator/spotter di luar bidang pandang.
 - illustrasi pemasangan kamera :
-![[images/Picture1.png|142]]   ![[images/Picture2.png|142]]   ![[images/Picture3.png|142]]   ![[images/Picture4.png|142]]
+<table>
+  <tr>
+    <td><img src="images/Picture1.png" width="142" alt="Pemasangan kamera 1"></td>
+    <td><img src="images/Picture2.png" width="142" alt="Pemasangan kamera 2"></td>
+    <td><img src="images/Picture3.png" width="142" alt="Pemasangan kamera 3"></td>
+    <td><img src="images/Picture4.png" width="142" alt="Pemasangan kamera 4"></td>
+  </tr>
+</table>
 
 ---
 
