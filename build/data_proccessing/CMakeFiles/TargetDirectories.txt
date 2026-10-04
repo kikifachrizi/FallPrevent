@@ -1,9 +1,0 @@
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/uninstall.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/data_proccessing_uninstall.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/test.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/edit_cache.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/rebuild_cache.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/list_install_components.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/install.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/install/local.dir
-/home/kiki/fall_prefent_tof/build/data_proccessing/CMakeFiles/install/strip.dir

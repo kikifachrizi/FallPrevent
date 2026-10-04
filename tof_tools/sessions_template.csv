@@ -1,0 +1,3 @@
+session_id,date,participant,participant_height_cm,clothing,bathroom_L_m,bathroom_W_m,ceiling_m,camera_position,camera_orientation,camera_height_m,pitch_deg,pitch_method,mat_layout,ambient_light,driver_params,grid_test_ref,ref_clip_id,notes
+P1S1,,P1,,,,,,,,,,,,,,,P1S1_REF,
+P2S1,,P2,,,,,,,,,,,,,,,P2S1_REF,

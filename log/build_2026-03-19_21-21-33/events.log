@@ -1,4 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000217] (-) JobUnselected: {'identifier': 'data_processing'}
-[0.000244] (-) JobUnselected: {'identifier': 'depth_viewer_cpp'}
-[0.000469] (-) EventReactorShutdown: {}
