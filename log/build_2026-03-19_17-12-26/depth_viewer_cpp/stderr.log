@@ -1,0 +1,4 @@
+[01m[K/home/kiki/fall_prefent_tof/src/depth_viewer_cpp/src/depth_viewer.cpp:[m[K In member function ‘[01m[Kvoid DepthViewer::[01;32m[Kcallback[m[K(std_msgs::msg::Float32MultiArray_<std::allocator<void> >::SharedPtr)[m[K’:
+[01m[K/home/kiki/fall_prefent_tof/src/depth_viewer_cpp/src/depth_viewer.cpp:36:30:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Kstd::vector<float>::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+   36 |         if ([01;35m[Kmsg->data.size() != width_ * height_[m[K)
+      |             [01;35m[K~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~[m[K

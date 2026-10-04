@@ -1,0 +1,4 @@
+[01m[K/home/kiki/fall_prefent_tof/src/data_processing/src/data_processing_node.cpp:[m[K In member function ‘[01m[Kvoid DataProcessingNode::[01;32m[KdepthCallback[m[K(std_msgs::msg::Float32MultiArray_<std::allocator<void> >::SharedPtr)[m[K’:
+[01m[K/home/kiki/fall_prefent_tof/src/data_processing/src/data_processing_node.cpp:69:28:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Kstd::deque<std::vector<float> >::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+   69 |         if ([01;35m[Kbuffer_.size() >= sequence_length_[m[K)
+      |             [01;35m[K~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~[m[K

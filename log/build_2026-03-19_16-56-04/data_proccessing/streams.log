@@ -1,0 +1,42 @@
+[0.007s] Invoking command in '/home/kiki/fall_prefent_tof/build/data_proccessing': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/kiki/fall_prefent_tof/src/data_proccessing -DCMAKE_INSTALL_PREFIX=/home/kiki/fall_prefent_tof/install/data_proccessing
+[0.047s] -- The C compiler identification is GNU 13.3.0
+[0.082s] -- The CXX compiler identification is GNU 13.3.0
+[0.094s] -- Detecting C compiler ABI info
+[0.161s] -- Detecting C compiler ABI info - done
+[0.167s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.167s] -- Detecting C compile features
+[0.167s] -- Detecting C compile features - done
+[0.175s] -- Detecting CXX compiler ABI info
+[0.253s] -- Detecting CXX compiler ABI info - done
+[0.258s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.258s] -- Detecting CXX compile features
+[0.258s] -- Detecting CXX compile features - done
+[0.261s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.358s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.432s] -- Found ament_lint_auto: 0.17.3 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.500s] -- Added test 'lint_cmake' to check CMake code style
+[0.500s] -- Added test 'xmllint' to check XML markup files
+[0.501s] -- Configuring done (0.5s)
+[0.503s] -- Generating done (0.0s)
+[0.504s] -- Build files have been written to: /home/kiki/fall_prefent_tof/build/data_proccessing
+[0.508s] Invoked command in '/home/kiki/fall_prefent_tof/build/data_proccessing' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/kiki/fall_prefent_tof/src/data_proccessing -DCMAKE_INSTALL_PREFIX=/home/kiki/fall_prefent_tof/install/data_proccessing
+[0.508s] Invoking command in '/home/kiki/fall_prefent_tof/build/data_proccessing': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/kiki/fall_prefent_tof/build/data_proccessing -- -j20 -l20
+[0.535s] Invoked command in '/home/kiki/fall_prefent_tof/build/data_proccessing' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/kiki/fall_prefent_tof/build/data_proccessing -- -j20 -l20
+[0.542s] Invoking command in '/home/kiki/fall_prefent_tof/build/data_proccessing': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/kiki/fall_prefent_tof/build/data_proccessing
+[0.549s] -- Install configuration: ""
+[0.549s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/ament_index/resource_index/package_run_dependencies/data_proccessing
+[0.549s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/ament_index/resource_index/parent_prefix_path/data_proccessing
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/environment/ament_prefix_path.sh
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/environment/ament_prefix_path.dsv
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/environment/path.sh
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/environment/path.dsv
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/local_setup.bash
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/local_setup.sh
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/local_setup.zsh
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/local_setup.dsv
+[0.550s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/package.dsv
+[0.551s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/ament_index/resource_index/packages/data_proccessing
+[0.551s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/cmake/data_proccessingConfig.cmake
+[0.551s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/cmake/data_proccessingConfig-version.cmake
+[0.551s] -- Installing: /home/kiki/fall_prefent_tof/install/data_proccessing/share/data_proccessing/package.xml
+[0.551s] Invoked command in '/home/kiki/fall_prefent_tof/build/data_proccessing' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/kiki/fall_prefent_tof/build/data_proccessing
