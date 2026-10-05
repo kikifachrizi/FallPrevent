@@ -17,7 +17,7 @@ Mengurangi alarm palsu dan keputusan overconfident saat observasi buruk (tubuh t
 
 ## 1. Peta blok dan status
 
-![[arsitektur_global_fall_detection_tof.png]]
+![Arsitektur global fall detection ToF](arsitektur_global_fall_detection_tof.png)
 
 ## 2. Opsi per blok
 
