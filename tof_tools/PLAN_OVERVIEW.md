@@ -22,13 +22,15 @@ Mengurangi alarm palsu dan keputusan overconfident saat observasi buruk (tubuh t
 ## 2. Opsi per blok
 
 ### Blok 1: Sensor + ROS 2 `[x]`
-- **Terkunci:** driver bawaan Arducam, mode 4 m, topik PointCloud2 + depth Image (tanpa amplitude).
+- **Terkunci:** driver bawaan Arducam, mode 4 m. Topik dikonfirmasi pilot P1_R1: `/depth_frame` Float32MultiArray (180×240, meter, 30 Hz) dan `/point_cloud` PointCloud2 tidak terorganisir (tanpa amplitude dan `camera_info`).
+- **Temuan pilot:** cloud = reproyeksi depth yang sama persis (galat 0 mm), dengan intrinsik fx 190,92 · fy 191,25 · cx 120 · cy 90, jadi `REC_CLOUD=0` aman (opsi b terpenuhi tanpa `camera_info`). Depth terkuantisasi (noise lantai ±12 cm) dan 20–50% piksel tubuh tanpa depth: parameter driver dan pakaian perlu dicek.
 - **Terbuka:** pitch (60° sementara), orientasi box, titik pasang (tes grid, Skenario 2.6); `REC_CLOUD` 0 atau 1.
 - **Catatan penting:** fitur tinggi tubuh butuh koordinat 3D. Sumbernya salah satu dari: (a) PointCloud2, (b) depth + `camera_info`, (c) intrinsik pendekatan dari FOV spek (kurang akurat, belum diverifikasi). Jadi `REC_CLOUD=0` hanya aman bila (b) atau (c) dipilih. Cek ada/tidaknya `camera_info` di uji teknis.
 
 ### Blok 2: Rekam `[~]`
 - **Terkunci:** 1 bag per klip, `rec_clip.sh`.
-- **Belum terbukti:** `timeout -s INT` menutup bag bersih; format `ros2 bag info` terbaca `validate_clip.sh`.
+- **Diperbaiki 12 Okt:** GO kini dihitung setelah recorder benar-benar merekam (pilot: recorder terlambat 0,6–4,7 dtk sehingga pre-buffer terpotong). Recorder dihentikan lewat `timeout` (SIGINT langsung diabaikan proses background). `set -u` + `source setup.bash` membuat skrip lama keluar diam-diam. `validate_clip.sh` kini memanggil `qc_clip.py`.
+- **Terbukti di PC dengan publisher dummy:** bag tertutup bersih, format `ros2 bag info` Jazzy terbaca. **Belum:** satu kali uji di Pi dengan driver asli.
 
 ### Blok 3: Dataset + anotasi `[~]`
 | Opsi `t_onset` | Posisi |
@@ -91,8 +93,8 @@ Usulan: node `rclpy` (Python) memakai kode offline yang sama; port ke C++ hanya 
 
 | # | Keputusan | Opsi | Harus diputuskan sebelum |
 |---|---|---|---|
-| 1 | Pitch, orientasi, titik pasang kamera | Tes grid (Skenario 2.6) | Ambil 36 klip |
-| 2 | `REC_CLOUD` 0 atau 1 | Tergantung `camera_info` | Uji teknis selesai |
+| 1 | Pitch, orientasi, titik pasang kamera | Tes grid (Skenario 2.5). Pilot terukur 2,84 m / ±76° | Ambil 36 klip |
+| 2 | ~~`REC_CLOUD` 0 atau 1~~ | **Diputuskan: 0** (cloud = reproyeksi depth; REF tetap merekam cloud) | Selesai 12 Okt |
 | 3 | Arah jatuh relatif kamera | Usulan: menjauhi/menyamping | Ambil klip jatuh |
 | 4 | Definisi `t_onset` | Usulan: Skenario Bagian 5 | Anotasi |
 | 5 | Etik kampus dan consent | Belum diverifikasi | Rekam partisipan |
@@ -103,14 +105,15 @@ Usulan: node `rclpy` (Python) memakai kode offline yang sama; port ke C++ hanya 
 
 ## 4. Next step (fase sekarang: N1–N8b)
 
-- [ ] 1. Jalankan `check_topics.sh`, isi `config.sh` (cek `camera_info`, encoding, fps)
-- [ ] 2. Uji teknis `rec_clip.sh` (bag tertutup bersih, durasi, ukuran, fps)
+- [x] 1. Topik, format, fps, intrinsik dikonfirmasi dari pilot P1_R1; `config.sh` terisi
+- [~] 2. Uji teknis `rec_clip.sh`: lolos dengan publisher dummy di PC; ulangi 1× di Pi dengan driver asli
+- [ ] 2b. Cek parameter driver (kuantisasi) dan pakaian terang vs gelap (piksel tubuh invalid)
 - [ ] 3. Pasang kamera, catat tinggi dan pitch; cek satu titik awal (kepala dan kaki terlihat, matras terlihat)
 - [ ] 4. Klip `REF`
 - [ ] 5. Ambil 36 klip (`run_rep.sh`)
 - [ ] 6. Anotasi (Skenario Bagian 5)
-- [ ] 7. Ekstraksi (`extract_clips.py`)
-- [ ] 8. Sanity check: plot tinggi tubuh per klip; jatuh harus terlihat berbeda dari berdiri/duduk
+- [ ] 7. Ekstraksi (`extract_clips.py`, sudah mendukung Float32MultiArray dan teruji di bag pilot)
+- [~] 8. Sanity check: kurva tinggi tubuh per klip sudah dibuat untuk pilot (`qc_clip.py`, analisis ulang). Jatuh terlihat berbeda dari berdiri; duduk (N3) mirip jatuh pelan
 
 **Berikutnya (belum dikerjakan):** rancang set HN dan OL, lalu mulai Blok 4–6.
 
@@ -119,3 +122,5 @@ Usulan: node `rclpy` (Python) memakai kode offline yang sama; port ke C++ hanya 
 | Tanggal | Catatan |
 |---|---|
 | 2026-10-04 | Topik terkonfirmasi: PointCloud2 + depth Image (tanpa amplitude). Folder `tof_tools` dibuat; ekstraksi diuji dengan bag sintetis; skrip bash belum diuji di Pi. Keputusan terbuka: Bagian 3 |
+| 2026-10-09 | Sesi pilot P1_R1 direkam (13 bag; 3 dihapus kemudian: N2_x1, N4_x1, N6_RETRY1) |
+| 2026-10-12 | Analisis ulang pilot: geometri 2,84 m / ±76°, intrinsik dari fit depth↔cloud, kuantisasi depth, 20–50% piksel tubuh invalid, klip pelan terlalu cepat, partisipan belum diam sebelum GO. P1_R1 dijadikan sesi pilot. Skrip diperbaiki (sinkronisasi GO, SIGINT, `set -u`, Float32MultiArray, `qc_clip.py`, `run_rep.sh rev`); keputusan #2 ditutup (`REC_CLOUD=0`) |

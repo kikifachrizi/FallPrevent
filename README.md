@@ -9,3 +9,7 @@ Proyek ini berisi rancangan pengambilan data dan perangkat pendukung untuk siste
 - [Overview rencana dan arsitektur sistem](tof_tools/PLAN_OVERVIEW.md)
 
 Skrip, konfigurasi, template, dan dokumentasi teknis tersedia di folder [`tof_tools`](tof_tools/).
+
+## Catatan folder lama
+
+`src/venvRos/` dan `archive/` adalah jalur lama (selisih frame → CNN) yang sudah ditinggalkan, dan hanya disimpan sebagai referensi. `src/venvRos/X.npy` berisi nol semua karena bug satuan (clip 100–4000 mengasumsikan mm, padahal data dalam meter). Pipeline yang dipakai sekarang ada di `tof_tools/`.

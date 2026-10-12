@@ -1,0 +1,375 @@
+<title>Peta Jalan FallPrevent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (max 1080px). Phase map as 4 columns that stack on phones, then evidence sections below. */
+:root{
+  --bg:#f6f7f8; --surface:#ffffff; --ink:#14171a; --ink-2:#4a5058; --ink-3:#7a818a;
+  --line:#dde1e5; --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1f8a4c; --good-soft:#e2f3e8; --warn:#b26b00; --warn-soft:#fbf0dc; --bad:#c23b3b; --bad-soft:#fae4e3;
+  --todo:#8a9099; --todo-soft:#eef0f2; --band:#eef2f6;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --surface:#1a1d21; --ink:#eef0f2; --ink-2:#b7bdc4; --ink-3:#8a9199;
+  --line:#2c3137; --accent:#4b93ea; --accent-soft:#1d2c3f;
+  --good:#46b874; --good-soft:#17301f; --warn:#e0a03a; --warn-soft:#352813; --bad:#ea6b6b; --bad-soft:#3a1c1c;
+  --todo:#8a9199; --todo-soft:#23272c; --band:#20252b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1a1d21; --ink:#eef0f2; --ink-2:#b7bdc4; --ink-3:#8a9199;
+  --line:#2c3137; --accent:#4b93ea; --accent-soft:#1d2c3f;
+  --good:#46b874; --good-soft:#17301f; --warn:#e0a03a; --warn-soft:#352813; --bad:#ea6b6b; --bad-soft:#3a1c1c;
+  --todo:#8a9199; --todo-soft:#23272c; --band:#20252b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:32px 64px;display:grid;gap:44px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4.4vw,40px);font-weight:700}
+h2{font-size:22px;font-weight:700}
+h3{font-size:15px;font-weight:600;font-family:var(--f-body)}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.lede{color:var(--ink-2);font-size:16px}
+header{display:grid;gap:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
+.meta b{color:var(--ink);font-weight:500}
+section{display:grid;gap:18px}
+.sec-head{display:grid;gap:6px}
+
+/* phase map */
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.d-done{background:var(--good)} .d-fix{background:var(--warn)} .d-here{background:var(--accent)} .d-todo{background:var(--todo)}
+.phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.phase{display:grid;align-content:start;gap:10px;min-width:0}
+.phase-h{display:grid;gap:2px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.phase-h .eyebrow{font-size:11px}
+.phase-h h3{font-family:var(--f-display);font-size:17px}
+.phase.cur .phase-h{border-bottom-color:var(--accent)}
+.step{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--todo);border-radius:6px;padding:10px 12px;display:grid;gap:4px;min-width:0}
+.step.done{border-left-color:var(--good)} .step.fix{border-left-color:var(--warn)} .step.todo{border-left-color:var(--todo)}
+.step.here{border:2px solid var(--accent);border-left-width:4px;background:var(--accent-soft)}
+.step .t{font-weight:600;font-size:14px}
+.step .d{font-size:12.8px;color:var(--ink-2)}
+.step .k{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
+.here-tag{justify-self:start;font-family:var(--f-mono);font-size:11px;font-weight:500;color:#fff;background:var(--accent);padding:2px 7px;border-radius:3px;letter-spacing:.04em}
+.loop{font-size:12.8px;color:var(--ink-2);border:1px dashed var(--line);border-radius:6px;padding:8px 10px}
+@media (max-width:860px){.phases{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.phases{grid-template-columns:minmax(0,1fr)}}
+
+/* findings */
+.findings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.find{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:6px;min-width:0}
+.find .num{font-family:var(--f-mono);font-size:22px;font-weight:500;color:var(--ink)}
+.find .num small{font-size:13px;color:var(--ink-3);font-weight:400}
+.find p{font-size:13.8px;color:var(--ink-2)}
+@media (max-width:640px){.findings{grid-template-columns:minmax(0,1fr)}}
+
+/* table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;font-size:12px;color:var(--ink-2);background:var(--band);position:sticky;top:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);font-size:12.5px}
+tr:last-child td{border-bottom:0}
+.chk{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-family:var(--f-mono);font-size:12px;font-weight:600}
+.c-ok{background:var(--good-soft);color:var(--good)} .c-no{background:var(--bad-soft);color:var(--bad)} .c-na{color:var(--ink-3)} .c-warn{background:var(--warn-soft);color:var(--warn)}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-ok{background:var(--good-soft);color:var(--good)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-bad{background:var(--bad-soft);color:var(--bad)}
+td .note{color:var(--ink-2);font-size:12.8px}
+.cid{font-family:var(--f-mono);font-weight:500}
+
+/* small multiples */
+.grid-sm{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.sm{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px 6px;display:grid;gap:2px;min-width:0;position:relative}
+.sm-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sm-h .cid{font-size:13px}
+.sm-h .s{font-size:12px;color:var(--ink-2);text-align:right}
+.sm svg{width:100%;height:auto;display:block;overflow:visible}
+.ax{font-family:var(--f-mono);font-size:9.5px;fill:var(--ink-3)}
+.gl{stroke:var(--line);stroke-width:1}
+.hline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.go{stroke:var(--ink-2);stroke-width:1;stroke-dasharray:3 3}
+.goL{font-family:var(--f-mono);font-size:9px;fill:var(--ink-2)}
+.fallband{fill:var(--warn-soft)}
+.cross{stroke:var(--ink-3);stroke-width:1}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:11px;padding:3px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-120%)}
+.cap{font-size:12.8px;color:var(--ink-3)}
+
+/* descent chart */
+.dchart{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto}
+.dchart svg{display:block;min-width:560px;width:100%;height:auto}
+.bandc{fill:var(--good-soft)} .bandp{fill:var(--accent-soft)}
+.bandL{font-family:var(--f-body);font-size:11px;font-weight:600}
+.lblc{fill:var(--good)} .lblp{fill:var(--accent)}
+.rowL{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+.rowS{font-family:var(--f-body);font-size:10.5px;fill:var(--ink-3)}
+.mk-ok{fill:var(--good)} .mk-bad{fill:var(--bad)} .mk-na{fill:var(--ink-2)}
+.valL{font-family:var(--f-mono);font-size:10.5px;fill:var(--ink-2)}
+
+/* next */
+ol.next{margin:0;padding-left:22px;display:grid;gap:10px;max-width:76ch}
+ol.next li{padding-left:4px}
+ol.next b{font-weight:600}
+ol.next .why{display:block;color:var(--ink-2);font-size:13.8px}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--band);padding:1px 4px;border-radius:3px}
+footer{font-size:12.5px;color:var(--ink-3);display:grid;gap:4px}
+
+/* block diagrams */
+.fig{margin:0;display:grid;gap:10px}
+.dg-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px}
+.dg{display:block;width:100%;min-width:860px;height:auto}
+.dg .grp{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.dg .gl2{font-family:var(--f-mono);font-size:10.5px;fill:var(--ink-3);letter-spacing:.04em}
+.dg .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.dg .dsh .bx{stroke-dasharray:5 4}
+.dg .dsh .bt,.dg .dsh .bs{opacity:.75}
+.dg .bar{fill:var(--todo)}
+.dg .st-done .bar{fill:var(--good)} .dg .st-fix .bar{fill:var(--warn)} .dg .st-todo .bar{fill:var(--todo)}
+.dg .bt{font-family:var(--f-body);font-size:12.5px;font-weight:600;fill:var(--ink)}
+.dg .bt.mono{font-family:var(--f-mono);font-size:11.5px;font-weight:500}
+.dg .bs{font-family:var(--f-body);font-size:10.5px;fill:var(--ink-2)}
+.dg .bn{font-family:var(--f-body);font-size:10.5px;font-weight:600;fill:var(--warn)}
+.dg .ar{fill:none;stroke:var(--ink-3);stroke-width:1.5}
+.dg .ar.dash{stroke-dasharray:4 3}
+.dg .ar.q{stroke:var(--accent);stroke-width:2}
+.dg .ahp{fill:var(--ink-3)} .dg .ahpq{fill:var(--accent)}
+.dg .al{font-family:var(--f-mono);font-size:10px;fill:var(--ink-2)}
+.dg .al.alq{fill:var(--accent);font-weight:500}
+.dg .rc{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+.dg .pillr.o-bad{fill:var(--bad-soft)} .dg .pt.o-bad{fill:var(--bad)}
+.dg .pillr.o-good{fill:var(--good-soft)} .dg .pt.o-good{fill:var(--good)}
+.dg .pillr.o-warn{fill:var(--warn-soft)} .dg .pt.o-warn{fill:var(--warn)}
+.dg .pillr.o-gray{fill:var(--todo-soft)} .dg .pt.o-gray{fill:var(--ink-2)}
+.dg .pt{font-family:var(--f-body);font-size:11px;font-weight:600}
+.dg .foot{font-family:var(--f-body);font-size:11px;fill:var(--ink-2)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Tesis · Deteksi jatuh ToF dengan reject-option</span>
+  <h1>Peta Jalan FallPrevent</h1>
+  <p class="lede">Posisi proyek dalam skema global, dari sensor sampai node real-time, ditambah hasil analisis ulang 10 klip P1_R1 yang direkam 9 Oktober 2026.</p>
+  <div class="meta">
+    <span>Kamera terukur <b id="m-cam"></b></span>
+    <span>Intrinsik <b>fx 190,9 · fy 191,3 · cx 120 · cy 90</b></span>
+    <span>Piksel valid <b id="m-valid"></b></span>
+    <span>30 Hz · 180×240</span>
+  </div>
+</header>
+
+<section aria-labelledby="h-blk">
+  <div class="sec-head">
+    <span class="eyebrow">Diagram blok</span>
+    <h2 id="h-blk">Bagaimana data mengalir sampai keputusan</h2>
+  </div>
+  <div class="legend">
+    <span><i class="dot d-done"></i>Sudah jalan</span>
+    <span><i class="dot d-fix"></i>Jalan, perlu diperbaiki</span>
+    <span><i class="dot d-todo"></i>Belum ada</span>
+    <span style="color:var(--warn);font-weight:600">Teks oranye = temuan dari data P1_R1</span>
+  </div>
+  <figure class="fig">
+    <div class="dg-wrap"><svg class="dg" viewBox="0 0 1110 346" role="img" aria-label="Aliran data: sensor ToF dan driver di Raspberry Pi menerbitkan depth 30 Hz, rec_clip.sh merekam satu bag per klip, bag dibackup lalu diekstraksi di PC menjadi clips, peta lantai dari klip REF, dan label clips.csv, yang semuanya masuk ke pipeline deteksi."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahp"/></marker><marker id="ahq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahpq"/></marker></defs><rect class="grp" x="12" y="30" width="460" height="300" rx="10"/><text class="gl2" x="24" y="48">Raspberry Pi 5 · ROS 2 Jazzy (di lokasi uji)</text><rect class="grp" x="484" y="30" width="152" height="300" rx="10"/><text class="gl2" x="496" y="48">Transfer</text><rect class="grp" x="648" y="30" width="452" height="300" rx="10"/><text class="gl2" x="660" y="48">PC / server (offline)</text><g class="blk st-fix"><rect class="bx" x="28" y="74" width="128" height="54" rx="6"/><rect class="bar" x="28" y="74" width="5" height="54" rx="2"/><text class="bt" x="94.0" y="96" text-anchor="middle">Arducam ToF</text><text class="bs" x="94.0" y="113" text-anchor="middle">240×180 · IR 940 nm</text><text class="bn" x="94.0" y="142" text-anchor="middle">depth terkuantisasi</text></g><g class="blk st-done"><rect class="bx" x="176" y="74" width="128" height="54" rx="6"/><rect class="bar" x="176" y="74" width="5" height="54" rx="2"/><text class="bt mono" x="242.0" y="96" text-anchor="middle">tof_pointcloud</text><text class="bs" x="242.0" y="113" text-anchor="middle">driver Arducam</text></g><g class="blk st-done"><rect class="bx" x="324" y="74" width="128" height="54" rx="6"/><rect class="bar" x="324" y="74" width="5" height="54" rx="2"/><text class="bt mono" x="390.0" y="96" text-anchor="middle">/depth_frame</text><text class="bs" x="390.0" y="113" text-anchor="middle">Float32 · m · 30 Hz</text></g><g class="blk st-todo dsh"><rect class="bx" x="176" y="190" width="128" height="54" rx="6"/><rect class="bar" x="176" y="190" width="5" height="54" rx="2"/><text class="bt mono" x="242.0" y="212" text-anchor="middle">/point_cloud</text><text class="bs" x="242.0" y="229" text-anchor="middle">= reproyeksi depth</text><text class="bn" x="242.0" y="258" text-anchor="middle">tidak perlu direkam</text></g><g class="blk st-fix"><rect class="bx" x="324" y="190" width="128" height="54" rx="6"/><rect class="bar" x="324" y="190" width="5" height="54" rx="2"/><text class="bt mono" x="390.0" y="212" text-anchor="middle">rec_clip.sh</text><text class="bs" x="390.0" y="229" text-anchor="middle">1 bag per klip + GO</text><text class="bn" x="390.0" y="258" text-anchor="middle">GO belum sinkron</text></g><g class="blk st-done"><rect class="bx" x="496" y="190" width="128" height="54" rx="6"/><rect class="bar" x="496" y="190" width="5" height="54" rx="2"/><text class="bt" x="562.0" y="212" text-anchor="middle">Backup</text><text class="bs" x="562.0" y="229" text-anchor="middle">rsync / Drive · md5</text></g><g class="blk st-fix"><rect class="bx" x="664" y="190" width="128" height="54" rx="6"/><rect class="bar" x="664" y="190" width="5" height="54" rx="2"/><text class="bt mono" x="730.0" y="212" text-anchor="middle">extract_clips.py</text><text class="bs" x="730.0" y="229" text-anchor="middle">→ uint16 mm</text><text class="bn" x="730.0" y="258" text-anchor="middle">belum baca Float32</text></g><g class="blk st-todo"><rect class="bx" x="812" y="74" width="128" height="54" rx="6"/><rect class="bar" x="812" y="74" width="5" height="54" rx="2"/><text class="bt" x="878.0" y="96" text-anchor="middle">Peta lantai</text><text class="bs" x="878.0" y="113" text-anchor="middle">dari klip REF</text><text class="bn" x="878.0" y="142" text-anchor="middle">REF belum direkam</text></g><g class="blk st-todo"><rect class="bx" x="812" y="190" width="128" height="54" rx="6"/><rect class="bar" x="812" y="190" width="5" height="54" rx="2"/><text class="bt mono" x="878.0" y="212" text-anchor="middle">clips/&lt;id&gt;/</text><text class="bs" x="878.0" y="229" text-anchor="middle">depth · t · meta</text></g><g class="blk st-fix"><rect class="bx" x="812" y="268" width="128" height="54" rx="6"/><rect class="bar" x="812" y="268" width="5" height="54" rx="2"/><text class="bt mono" x="878.0" y="290" text-anchor="middle">clips.csv</text><text class="bs" x="878.0" y="307" text-anchor="middle">onset · end · valid</text></g><g class="blk st-fix"><rect class="bx" x="960" y="190" width="128" height="54" rx="6"/><rect class="bar" x="960" y="190" width="5" height="54" rx="2"/><text class="bt" x="1026.0" y="212" text-anchor="middle">Pipeline deteksi</text><text class="bs" x="1026.0" y="229" text-anchor="middle">diagram 2</text></g><path class="ar" d="M156,101 L174,101" marker-end="url(#ah)"/><path class="ar" d="M304,101 L322,101" marker-end="url(#ah)"/><path class="ar dash" d="M240,128 L240,188" marker-end="url(#ah)"/><text class="al" x="246" y="150" text-anchor="start">reproyeksi</text><path class="ar" d="M388,128 L388,188" marker-end="url(#ah)"/><text class="al" x="394" y="150" text-anchor="start">subscribe</text><path class="ar" d="M452,217 L494,217" marker-end="url(#ah)"/><text class="al" x="473" y="209" text-anchor="middle">MCAP</text><path class="ar" d="M624,217 L662,217" marker-end="url(#ah)"/><path class="ar" d="M792,217 L810,217" marker-end="url(#ah)"/><path class="ar" d="M728,190 L728,101 L810,101" marker-end="url(#ah)"/><text class="al" x="734" y="93" text-anchor="start">klip REF</text><path class="ar" d="M940,217 L958,217" marker-end="url(#ah)"/><path class="ar" d="M940,101 L1024,101 L1024,188" marker-end="url(#ah)"/><text class="al" x="982" y="93" text-anchor="middle">tinggi + pitch</text><path class="ar" d="M940,295 L1024,295 L1024,246" marker-end="url(#ah)"/><text class="al" x="1030" y="282" text-anchor="start">label</text></svg></div>
+    <figcaption class="cap"><b>1 · Akuisisi sampai dataset.</b> Di Pi hanya <code>/depth_frame</code> yang perlu direkam, karena <code>/point_cloud</code> bisa dihitung ulang dari depth. Di PC, satu bag menjadi satu folder <code>clips/</code>. Klip REF memberi peta lantai (tinggi dan pitch kamera), dan <code>clips.csv</code> memberi label untuk evaluasi.</figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="dg-wrap"><svg class="dg" viewBox="0 0 1110 400" role="img" aria-label="Pipeline deteksi: depth frame bercabang ke jalur P (kurangi latar, tinggi di atas lantai, segmentasi tubuh, fitur, regresi logistik) dan jalur Q (masker valid dan masker tubuh menjadi skor kualitas). Sistem C memakai Q sebagai gerbang sebelum ambang P untuk memutuskan bukti kurang, jatuh, aman, atau ragu."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahp"/></marker><marker id="ahq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahpq"/></marker></defs><rect class="grp" x="156" y="30" width="724" height="160" rx="10"/><text class="gl2" x="168" y="48">Jalur bukti jatuh · P(jatuh | x)</text><rect class="grp" x="156" y="214" width="724" height="150" rx="10"/><text class="gl2" x="168" y="232">Jalur kualitas observasi · Q(x)</text><g class="blk st-done"><rect class="bx" x="12" y="170" width="128" height="54" rx="6"/><rect class="bar" x="12" y="170" width="5" height="54" rx="2"/><text class="bt" x="78.0" y="192" text-anchor="middle">Depth frame</text><text class="bs" x="78.0" y="209" text-anchor="middle">180×240 · 30 Hz</text></g><g class="blk st-fix"><rect class="bx" x="172" y="78" width="128" height="54" rx="6"/><rect class="bar" x="172" y="78" width="5" height="54" rx="2"/><text class="bt" x="238.0" y="100" text-anchor="middle">Kurangi latar</text><text class="bs" x="238.0" y="117" text-anchor="middle">REF − depth &gt; margin</text><text class="bn" x="238.0" y="146" text-anchor="middle">noise ±12 cm</text></g><g class="blk st-fix"><rect class="bx" x="316" y="78" width="128" height="54" rx="6"/><rect class="bar" x="316" y="78" width="5" height="54" rx="2"/><text class="bt" x="382.0" y="100" text-anchor="middle">Tinggi di lantai</text><text class="bs" x="382.0" y="117" text-anchor="middle">intrinsik + bidang</text></g><g class="blk st-fix"><rect class="bx" x="460" y="78" width="128" height="54" rx="6"/><rect class="bar" x="460" y="78" width="5" height="54" rx="2"/><text class="bt" x="526.0" y="100" text-anchor="middle">Segmentasi tubuh</text><text class="bs" x="526.0" y="117" text-anchor="middle">komponen terbesar</text><text class="bn" x="526.0" y="71" text-anchor="middle">20–50% piksel invalid</text></g><g class="blk st-fix"><rect class="bx" x="604" y="78" width="128" height="54" rx="6"/><rect class="bar" x="604" y="78" width="5" height="54" rx="2"/><text class="bt" x="670.0" y="100" text-anchor="middle">Fitur ±1 dtk</text><text class="bs" x="670.0" y="117" text-anchor="middle">tinggi · dh/dt · bentuk</text></g><g class="blk st-todo"><rect class="bx" x="748" y="78" width="128" height="54" rx="6"/><rect class="bar" x="748" y="78" width="5" height="54" rx="2"/><text class="bt" x="814.0" y="100" text-anchor="middle">P(jatuh | x)</text><text class="bs" x="814.0" y="117" text-anchor="middle">regresi logistik</text></g><g class="blk st-done"><rect class="bx" x="172" y="262" width="128" height="54" rx="6"/><rect class="bar" x="172" y="262" width="5" height="54" rx="2"/><text class="bt" x="238.0" y="284" text-anchor="middle">Masker valid</text><text class="bs" x="238.0" y="301" text-anchor="middle">elips area valid</text></g><g class="blk st-todo"><rect class="bx" x="604" y="262" width="128" height="54" rx="6"/><rect class="bar" x="604" y="262" width="5" height="54" rx="2"/><text class="bt" x="670.0" y="284" text-anchor="middle">Q(x)</text><text class="bs" x="670.0" y="301" text-anchor="middle">valid · edge · kontinu</text></g><g class="blk st-todo"><rect class="bx" x="904" y="96" width="194" height="230" rx="6"/><rect class="bar" x="904" y="96" width="5" height="230" rx="2"/><text class="bt" x="1003.0" y="120" text-anchor="middle">Keputusan · Sistem C</text><text class="rc" x="920" y="161">Q &lt; τq</text><rect class="pillr o-gray" x="1008" y="146" width="80" height="22" rx="11"/><text class="pt o-gray" x="1048" y="161" text-anchor="middle">bukti kurang</text><text class="rc" x="920" y="201">P ≥ τtinggi</text><rect class="pillr o-bad" x="1008" y="186" width="80" height="22" rx="11"/><text class="pt o-bad" x="1048" y="201" text-anchor="middle">JATUH</text><text class="rc" x="920" y="241">P ≤ τrendah</text><rect class="pillr o-good" x="1008" y="226" width="80" height="22" rx="11"/><text class="pt o-good" x="1048" y="241" text-anchor="middle">aman</text><text class="rc" x="920" y="281">selain itu</text><rect class="pillr o-warn" x="1008" y="266" width="80" height="22" rx="11"/><text class="pt o-warn" x="1048" y="281" text-anchor="middle">ragu</text><text class="bs" x="1003.0" y="314" text-anchor="middle">urutan aturan dari atas</text></g><path class="ar" d="M140,197 L156,197 L156,105 L170,105" marker-end="url(#ah)"/><path class="ar" d="M156,197 L156,289 L170,289" marker-end="url(#ah)"/><path class="ar" d="M300,105 L314,105" marker-end="url(#ah)"/><path class="ar" d="M444,105 L458,105" marker-end="url(#ah)"/><path class="ar" d="M588,105 L602,105" marker-end="url(#ah)"/><path class="ar" d="M732,105 L746,105" marker-end="url(#ah)"/><path class="ar" d="M876,105 L902,105" marker-end="url(#ah)"/><text class="al" x="889" y="97" text-anchor="middle">P</text><path class="ar q" d="M524,132 L524,289 L602,289" marker-end="url(#ahq)"/><text class="al alq" x="530" y="252" text-anchor="start">masker tubuh</text><path class="ar q" d="M300,289 L380,289 L380,332 L668,332 L668,318" marker-end="url(#ahq)"/><text class="al alq" x="420" y="326" text-anchor="start">batas elips</text><path class="ar q" d="M732,289 L890,289 L890,157 L902,157" marker-end="url(#ahq)"/><text class="al alq" x="808" y="281" text-anchor="middle">Q (gerbang)</text><text class="foot" x="12" y="388">Sistem A: hanya P &gt; 0,5 · Sistem B: tolak bila P dekat 0,5 · Sistem C: ditambah gerbang Q (garis biru). Base classifier sama di ketiganya.</text></svg></div>
+    <figcaption class="cap"><b>2 · Pipeline deteksi per jendela ±1 dtk.</b> Satu frame depth melewati dua jalur. Jalur atas mengukur seberapa kuat bukti jatuh. Jalur bawah mengukur seberapa layak observasinya: piksel tubuh yang invalid dan tubuh yang menyentuh batas elips menurunkan Q. Hanya Sistem C yang memakai jalur biru. Itulah yang diuji tesis: apakah gerbang Q mengurangi alarm palsu saat observasi buruk.</figcaption>
+  </figure>
+</section>
+
+<section aria-labelledby="h-map">
+  <div class="sec-head">
+    <span class="eyebrow">Skema global</span>
+    <h2 id="h-map">Kita sampai mana</h2>
+    <p class="lede">Rekaman P1_R1 secara de facto sudah menjalankan langkah "uji teknis" di PLAN_OVERVIEW. Hasilnya tidak bisa langsung jadi dataset, tapi sudah membuka masalah sensor dan skrip yang harus dibereskan sebelum 36 klip diambil.</p>
+  </div>
+  <div class="legend">
+    <span><i class="dot d-done"></i>Selesai</span>
+    <span><i class="dot d-here"></i>Posisi sekarang</span>
+    <span><i class="dot d-fix"></i>Jalan, tapi perlu diperbaiki</span>
+    <span><i class="dot d-todo"></i>Belum</span>
+  </div>
+  <div class="phases">
+    <div class="phase cur">
+      <div class="phase-h"><span class="eyebrow">Fase 1</span><h3>Akuisisi</h3></div>
+      <div class="step done"><span class="k">Blok 1</span><span class="t">Sensor + ROS 2 di Pi 5</span><span class="d">Driver Arducam, <code>/depth_frame</code> dan <code>/point_cloud</code>, 30 Hz stabil.</span></div>
+      <div class="step fix"><span class="k">Blok 1 · temuan baru</span><span class="t">Kualitas depth</span><span class="d">Nilai terkuantisasi (20–25% piksel tepat 3,000 m). 20–50% piksel tubuh invalid, kemungkinan karena IR terserap.</span></div>
+      <div class="step fix"><span class="k">Blok 2</span><span class="t">Rekam per klip</span><span class="d">Bag tertutup bersih. GO dihitung dari peluncuran recorder, sehingga pre-buffer terpotong.</span></div>
+      <div class="step here"><span class="here-tag">KITA DI SINI</span><span class="t">Pilot P1_R1 dan analisis ulang</span><span class="d">10 klip dianalisis. Geometri, intrinsik, dan masalah protokol sudah teridentifikasi.</span></div>
+      <div class="step todo"><span class="k">Berikutnya</span><span class="t">Perbaikan skrip + protokol</span><span class="d"><code>rec_clip.sh</code>, <code>extract_clips.py</code>, <code>check_topics.sh</code>, <code>run_rep.sh rev</code>, parameter driver.</span></div>
+      <div class="step todo"><span class="t">Tes grid + REF + sessions.csv</span><span class="d">Ukur tinggi dan pitch dengan meteran, lalu bandingkan dengan fit lantai 2,84 m / 76°.</span></div>
+    </div>
+    <div class="phase">
+      <div class="phase-h"><span class="eyebrow">Fase 2</span><h3>Dataset baseline</h3></div>
+      <div class="step todo"><span class="k">Blok 3</span><span class="t">Ambil 36 klip</span><span class="d">P1 dan P2 × 2 rep × N1–N8b, Rep 2 urutan dibalik.</span></div>
+      <div class="step fix"><span class="k">Blok 3</span><span class="t">Ekstraksi ke <code>clips/</code></span><span class="d">Skrip ada, tapi belum bisa membaca Float32MultiArray.</span></div>
+      <div class="step fix"><span class="k">Blok 3</span><span class="t">Anotasi <code>clips.csv</code></span><span class="d">Draf onset dan end semi-otomatis sudah ada dari kurva tinggi. Verifikasi di Foxglove.</span></div>
+      <div class="loop">Set HN (duduk, jongkok) dan OL (terpotong, tertutup) dirancang setelah baseline. N3 sudah menunjukkan duduk mirip jatuh pelan.</div>
+    </div>
+    <div class="phase">
+      <div class="phase-h"><span class="eyebrow">Fase 3</span><h3>Pemrosesan dan model</h3></div>
+      <div class="step fix"><span class="k">Blok 4</span><span class="t">Preprocessing</span><span class="d">Prototipe: background, bidang lantai RANSAC, segmentasi. Margin 5–8 cm tidak cukup untuk noise ±12 cm.</span></div>
+      <div class="step fix"><span class="k">Blok 5a</span><span class="t">P(jatuh | x)</span><span class="d">Fitur tinggi p97 dan dh/dt sudah jalan. Luas dan bentuk belum andal karena tubuh berbaring di matras sulit tersegmentasi.</span></div>
+      <div class="step todo"><span class="k">Blok 5b</span><span class="t">Kualitas Q(x)</span><span class="d">valid_ratio di area tubuh menjadi komponen utama. edge_touch mengacu ke elips area valid.</span></div>
+    </div>
+    <div class="phase">
+      <div class="phase-h"><span class="eyebrow">Fase 4</span><h3>Keputusan dan rilis</h3></div>
+      <div class="step todo"><span class="k">Blok 6</span><span class="t">Lapisan keputusan A · B · C</span><span class="d">Jatuh, aman, ragu, bukti kurang. Ambang dicari dengan target recall yang sama.</span></div>
+      <div class="step todo"><span class="k">Blok 7</span><span class="t">Evaluasi per klip</span><span class="d">Recall, alarm palsu, delay, risk–coverage, McNemar.</span></div>
+      <div class="step todo"><span class="k">Blok 8</span><span class="t">Node real-time</span><span class="d">rclpy dulu, pindah ke C++ bila latensi di Pi 5 tidak cukup.</span></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-find">
+  <div class="sec-head">
+    <span class="eyebrow">Analisis ulang</span>
+    <h2 id="h-find">Enam temuan yang mengubah rencana</h2>
+  </div>
+  <div class="findings">
+    <div class="find"><span class="num">2,84 m · 76°</span><h3>Geometri kamera berbeda dari rencana</h3><p>Fit bidang lantai memberi tinggi 2,84 m dan pitch 76°, bukan 2,5 m / 60°. Tinggi berdiri yang terukur 1,73–1,75 m, angka yang masuk akal untuk orang dewasa. Pastikan dengan meteran. Kuantisasi depth bisa sedikit membiaskan hasil fit.</p></div>
+    <div class="find"><span class="num">0 <small>dari 10 klip</small></span><h3>Lolos semua kriteria protokol</h3><p>Sesi belum punya REF, cue_log, dan sessions.csv. Hanya N1 dan N6 yang diam ≥ 3 dtk sebelum GO. Di klip lain partisipan masih bergerak ke posisi saat pre-buffer berjalan.</p></div>
+    <div class="find"><span class="num">0 <small>dari 4 klip "pelan"</small></span><h3>Masuk rentang 1,5–3,5 dtk</h3><p>N5 paling dekat (1,3 dtk). N7, N7_RETRY1, dan N8b turun dalam 0,5–1,2 dtk. Jatuh cepat (N4, N6) sudah benar, 0,7–0,8 dtk.</p></div>
+    <div class="find"><span class="num">20–50% <small>piksel tubuh</small></span><h3>Bagian tubuh tidak terbaca</h3><p>Kepala dan badan sering bernilai depth 0. Kemungkinan rambut atau baju gelap menyerap IR 940 nm. Akibatnya tubuh yang berbaring di matras hanya terlihat sebagian. Ini justru sinyal utama untuk Q(x).</p></div>
+    <div class="find"><span class="num">±12 cm</span><h3>Noise berasal dari kuantisasi</h3><p>Hanya puluhan level nilai per adegan, menempel di angka bulat (1,0 · 1,5 · 2,0 · 3,0 m). Cek mode jarak dan filter driver sebelum pengambilan berikutnya.</p></div>
+    <div class="find"><span class="num">Cloud = depth</span><h3>Rekaman cloud tidak perlu</h3><p>Point cloud adalah reproyeksi depth yang sama persis (galat 0 mm). <code>REC_CLOUD=0</code> menghemat ±50% ukuran data, dan koordinat 3D dihitung dari intrinsik.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-tbl">
+  <div class="sec-head">
+    <span class="eyebrow">Per klip</span>
+    <h2 id="h-tbl">Kriteria protokol bagian 3.1</h2>
+    <p class="cap">GO diperkirakan dari skrip: 7 dtk dikurangi keterlambatan start recorder (durasi rencana − durasi bag). Onset dan end = titik 10% dan 90% penurunan tinggi kepala/bahu.</p>
+  </div>
+  <div class="tbl-wrap"><table id="tbl"><thead><tr>
+    <th>Klip</th><th>Skenario</th><th class="num">Durasi</th><th>±1,5 dtk</th><th class="num">Diam pra-GO</th><th>≥ 3 dtk</th><th class="num">Reaksi</th><th class="num">Turun</th><th>Kecepatan</th><th class="num">Tinggi</th><th>Status</th>
+  </tr></thead><tbody></tbody></table></div>
+</section>
+
+<section aria-labelledby="h-sm">
+  <div class="sec-head">
+    <span class="eyebrow">Kurva tinggi</span>
+    <h2 id="h-sm">Tinggi tertinggi tubuh di atas lantai</h2>
+    <p class="cap">Persentil 97 titik tubuh, median 5 frame. Garis putus = perkiraan GO. Pita kuning = fase turun (onset sampai end). Arahkan kursor untuk melihat nilai.</p>
+  </div>
+  <div class="grid-sm" id="sm"></div>
+</section>
+
+<section aria-labelledby="h-desc">
+  <div class="sec-head">
+    <span class="eyebrow">Kecepatan jatuh</span>
+    <h2 id="h-desc">Durasi turun dibanding definisi cepat dan pelan</h2>
+    <p class="cap">Hijau = sesuai kode, merah = tidak sesuai, abu-abu = tidak dinilai (N3 duduk; N8a turun dua tahap: condong, lalu jatuh cepat).</p>
+  </div>
+  <div class="dchart"><svg id="dsvg" role="img" aria-label="Durasi turun per klip dibanding pita cepat ≤ 1 detik dan pelan 1,5 sampai 3,5 detik"></svg></div>
+</section>
+
+<section aria-labelledby="h-next">
+  <div class="sec-head">
+    <span class="eyebrow">Arah berikutnya</span>
+    <h2 id="h-next">Urutan kerja sebelum 36 klip diambil</h2>
+  </div>
+  <ol class="next">
+    <li><b>Jadikan P1_R1 sebagai sesi pilot</b><span class="why">Simpan sebagai data uji pipeline dan contoh awal. Untuk dataset final, rekam ulang seluruh P1_R1 setelah perbaikan di bawah, bukan hanya N7 dan N8b.</span></li>
+    <li><b>Perbaiki <code>rec_clip.sh</code></b><span class="why">Hitung PRE sejak recorder benar-benar menulis. Catat <code>t_cue_s</code> relatif terhadap awal bag.</span></li>
+    <li><b>Cek driver dan kondisi IR</b><span class="why">Mode 2 m / 4 m, filter, confidence. Coba partisipan dengan baju terang untuk melihat apakah piksel invalid di tubuh berkurang.</span></li>
+    <li><b>Ukur geometri, tes grid, rekam REF</b><span class="why">Tinggi lensa dan pitch dengan meteran, peta UTUH/BAWAH/KELUAR, isi <code>sessions.csv</code>. Partisipan sudah di posisi sebelum rekam dimulai.</span></li>
+    <li><b>Latih "pelan" sebelum merekam</b><span class="why">Target 1,5–3,5 dtk dari awal turun sampai di matras. Validasi di tempat dengan kurva tinggi.</span></li>
+    <li><b>Sesuaikan <code>extract_clips.py</code></b><span class="why">Float32MultiArray dalam meter → uint16 mm, set <code>REC_CLOUD=0</code>, lalu jalankan analisis ini sebagai cek otomatis setelah setiap klip.</span></li>
+    <li><b>Ambil 36 klip, lalu Blok 4–7</b><span class="why">Preprocessing dengan peta lantai REF, P(jatuh|x) regresi logistik, Q(x) dengan valid_ratio tubuh, evaluasi A/B/C. Paralel: rancang set HN dan OL.</span></li>
+  </ol>
+</section>
+
+<footer>
+  <span>Sumber: 10 bag MCAP di <code>~/Falldetect/P1_R1_Nanas</code>, repo FallPrevent commit 9032cc8, Skenario Uji Baseline 36 Klip. Dianalisis 12 Oktober 2026.</span>
+  <span>Semua angka berasal dari depth frame. GO adalah perkiraan karena cue_log.csv belum ada.</span>
+</footer>
+</div>
+
+<script>
+const DATA = {"camera":{"height_m":2.841,"pitch_deg":76.2,"fx":190.92,"fy":191.25,"cx":120.0,"cy":90.0,"valid_px_frac":0.452,"noise_std_m":0.128},"clips":[{"id":"N1","code":"N1","scen":"Berdiri diam","dur":16.26,"plan":17,"derr":-0.74,"go":6.26,"still":3.47,"react":null,"on":null,"end":null,"desc":null,"v":0.13,"hs":1.75,"he":1.74,"edge":0.0,"dark":0.22,"speed":null,"speed_ok":null,"status":"ok","verdict":"Layak untuk pilot","note":"Diam 3,5 dtk sebelum GO, tinggi stabil 1,75 m.","t":[0.0,0.09,0.19,0.29,0.39,0.49,0.59,0.69,0.79,0.89,0.99,1.09,1.19,1.29,1.39,1.49,1.59,1.69,1.79,1.89,1.99,2.09,2.19,2.29,2.39,2.49,2.59,2.69,2.79,2.89,2.99,3.09,3.19,3.29,3.39,3.49,3.59,3.69,3.79,3.9,3.99,4.09,4.19,4.29,4.39,4.49,4.59,4.69,4.79,4.89,4.99,5.09,5.19,5.29,5.39,5.49,5.59,5.69,5.79,5.89,5.99,6.09,6.19,6.29,6.39,6.49,6.59,6.69,6.79,6.89,6.99,7.09,7.19,7.3,7.39,7.49,7.59,7.69,7.79,7.89,7.99,8.09,8.19,8.29,8.39,8.49,8.59,8.69,8.79,8.89,8.99,9.09,9.19,9.29,9.39,9.49,9.59,9.69,9.79,9.89,9.99,10.09,10.19,10.29,10.39,10.49,10.59,10.69,10.79,10.89,10.99,11.09,11.19,11.29,11.39,11.49,11.59,11.69,11.79,11.89,11.99,12.09,12.19,12.29,12.39,12.49,12.59,12.69,12.79,12.89,12.99,13.09,13.19,13.29,13.39,13.49,13.59,13.69,13.79,13.89,13.99,14.09,14.19,14.29,14.39,14.49,14.59,14.69,14.79,14.89,14.99,15.09,15.19,15.29,15.39,15.49,15.59,15.69,15.79,15.89,15.99,16.09,16.19],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.109,1.345,1.403,1.455,1.5,1.612,1.671,1.686,1.729,1.743,1.743,1.744,1.745,1.736,1.731,1.731,1.736,1.74,1.745,1.747,1.747,1.745,1.745,1.747,1.748,1.748,1.749,1.749,1.74,1.748,1.749,1.75,1.75,1.752,1.753,1.753,1.753,1.752,1.75,1.753,1.754,1.754,1.751,1.751,1.753,1.752,1.75,1.755,1.756,1.751,1.75,1.749,1.749,1.749,1.748,1.716,1.722,1.719,1.718,1.726,1.725,1.725,1.73,1.727,1.73,1.73,1.73,1.728,1.729,1.73,1.73,1.725,1.731,1.733,1.729,1.729,1.731,1.729,1.73,1.729,1.73,1.731,1.731,1.734,1.736,1.731,1.732,1.734,1.734,1.736,1.733,1.733,1.731,1.731,1.733,1.738,1.736,1.733,1.735,1.736,1.736,1.734,1.735,1.735,1.735,1.735,1.735,1.734,1.735,1.734,1.734,1.734,1.734,1.732,1.734,1.737,1.739,1.733,1.733,1.735,1.729,1.731,1.736,1.736,1.733,1.733,1.733,1.73,1.735,1.735,1.734,1.731,1.731,1.734,1.735,1.736,1.739,1.735,1.735,1.736,1.737,1.737,1.737,1.738,1.734,1.735,1.738,1.738,1.735,1.738,1.74,1.739,1.739,1.738,1.743,1.743]},{"id":"N2","code":"N2","scen":"Jalan silang","dur":16.4,"plan":17,"derr":-0.6,"go":6.4,"still":1.93,"react":null,"on":null,"end":null,"desc":null,"v":0.65,"hs":1.74,"he":1.55,"edge":0.03,"dark":0.31,"speed":null,"speed_ok":null,"status":"warn","verdict":"Cek di Foxglove","note":"Perpindahan titik tengah tubuh hanya ±0,4 m. Perlu dipastikan benar-benar menyeberang frame.","t":[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,5.0,5.1,5.2,5.3,5.4,5.5,5.6,5.7,5.8,5.9,6.0,6.1,6.2,6.3,6.4,6.5,6.6,6.7,6.8,6.9,7.0,7.1,7.2,7.3,7.4,7.5,7.6,7.7,7.8,7.9,8.0,8.1,8.2,8.3,8.4,8.5,8.6,8.7,8.8,8.9,9.0,9.12,9.2,9.3,9.4,9.52,9.6,9.72,9.8,9.9,10.0,10.1,10.2,10.32,10.4,10.52,10.6,10.7,10.8,10.92,11.0,11.1,11.22,11.3,11.42,11.5,11.62,11.7,11.82,11.9,12.02,12.1,12.22,12.3,12.42,12.5,12.62,12.7,12.82,12.9,13.02,13.1,13.22,13.3,13.42,13.5,13.62,13.7,13.82,13.9,14.02,14.1,14.22,14.3,14.42,14.52,14.6,14.72,14.8,14.92,15.0,15.12,15.2,15.32,15.4,15.52,15.6,15.72,15.8,15.92,16.0,16.1,16.2,16.32,16.4],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.026,1.263,1.352,1.47,1.674,1.713,1.726,1.736,1.738,1.743,1.747,1.734,1.728,1.722,1.722,1.729,1.728,1.728,1.727,1.728,1.739,1.738,1.734,1.739,1.746,1.745,1.748,1.748,1.746,1.733,1.733,1.734,1.743,1.745,1.742,1.743,1.743,1.744,1.747,1.746,1.747,1.749,1.747,1.745,1.749,1.749,1.749,1.744,1.744,1.748,1.747,1.747,1.739,1.738,1.741,1.737,1.737,1.733,1.736,1.746,1.763,1.76,1.755,1.755,1.758,1.755,1.754,1.757,1.752,1.758,1.761,1.761,1.768,1.771,1.775,1.769,1.769,1.728,1.697,1.649,1.598,1.544,1.537,1.53,1.53,1.543,1.55,1.562,1.569,1.565,1.574,1.578,1.586,1.578,1.576,1.59,1.581,1.575,1.577,1.577,1.587,1.578,1.578,1.571,1.571,1.579,1.579,1.578,1.589,1.59,1.587,1.578,1.578,1.586,1.588,1.576,1.581,1.582,1.59,1.59,1.58,1.579,1.578,1.578,1.579,1.578,1.577,1.557,1.549,1.545,1.545,1.548,1.548,1.523,1.523,1.518,1.511,1.506,1.504]},{"id":"N3","code":"N3","scen":"Duduk","dur":14.42,"plan":15,"derr":-0.58,"go":6.42,"still":0.36,"react":1.8,"on":8.22,"end":11.65,"desc":3.43,"v":1.14,"hs":1.73,"he":0.65,"edge":0.0,"dark":0.3,"speed":null,"speed_ok":null,"status":"warn","verdict":"Layak, ada catatan","note":"Duduk 3,4 dtk. Partisipan masih bergerak sampai GO.","t":[0.0,0.06,0.4,0.43,0.43,0.43,0.43,0.46,0.52,0.59,0.66,0.72,0.79,0.85,0.92,0.99,1.05,1.12,1.19,1.26,1.32,1.39,1.46,1.52,1.59,1.66,1.72,1.79,1.86,1.92,1.99,2.06,2.12,2.19,2.25,2.32,2.39,2.45,2.52,2.59,2.65,2.72,2.79,2.86,2.92,2.99,3.05,3.12,3.19,3.25,3.32,3.39,3.45,3.52,3.59,3.65,3.72,3.79,3.85,3.92,3.99,4.05,4.12,4.19,4.25,4.32,4.39,4.45,4.52,4.59,4.65,4.72,4.79,4.85,4.92,4.99,5.05,5.12,5.19,5.25,5.32,5.39,5.45,5.52,5.59,5.65,5.72,5.79,5.85,5.92,5.99,6.05,6.12,6.19,6.25,6.32,6.39,6.45,6.52,6.59,6.65,6.72,6.79,6.85,6.92,6.99,7.05,7.12,7.19,7.25,7.32,7.39,7.45,7.52,7.59,7.65,7.72,7.79,7.85,7.92,7.99,8.05,8.12,8.19,8.25,8.32,8.39,8.45,8.52,8.59,8.65,8.72,8.78,8.85,8.92,8.99,9.05,9.12,9.19,9.25,9.32,9.39,9.45,9.52,9.59,9.65,9.72,9.79,9.85,9.92,9.98,10.05,10.12,10.19,10.25,10.32,10.38,10.45,10.52,10.59,10.65,10.72,10.78,10.85,10.92,10.98,11.05,11.12,11.18,11.25,11.32,11.39,11.45,11.52,11.58,11.65,11.72,11.79,11.85,11.92,11.98,12.05,12.12,12.19,12.25,12.32,12.38,12.45,12.52,12.58,12.65,12.72,12.78,12.85,12.92,12.98,13.05,13.12,13.18,13.25,13.32,13.38,13.45,13.52,13.58,13.65,13.72,13.78,13.85,13.92,13.98,14.05,14.12,14.18,14.25,14.32,14.38],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.088,1.173,1.201,1.261,1.32,1.345,1.456,1.617,1.669,1.684,1.694,1.698,1.712,1.724,1.726,1.728,1.732,1.734,1.753,1.756,1.759,1.759,1.759,1.764,1.762,1.761,1.744,1.743,1.735,1.735,1.736,1.737,1.744,1.745,1.745,1.743,1.731,1.724,1.724,1.723,1.721,1.71,1.704,1.699,1.693,1.706,1.706,1.711,1.701,1.706,1.704,1.703,1.7,1.699,1.698,1.702,1.698,1.699,1.699,1.699,1.7,1.7,1.704,1.705,1.704,1.705,1.702,1.701,1.7,1.7,1.694,1.692,1.69,1.687,1.679,1.608,1.516,1.452,1.444,1.444,1.443,1.443,1.442,1.439,1.439,1.447,1.449,1.449,1.449,1.458,1.465,1.473,1.481,1.487,1.492,1.475,1.427,1.386,1.313,1.257,1.201,1.16,1.11,1.087,1.057,1.044,1.024,1.019,1.008,0.995,0.983,0.976,0.964,0.956,0.945,0.937,0.925,0.911,0.902,0.878,0.875,0.86,0.859,0.843,0.804,0.794,0.758,0.751,0.76,0.809,0.807,0.794,0.777,0.743,0.707,0.703,0.696,0.706,0.709,0.728,0.747,0.709,0.705,0.685,0.678,0.668,0.662,0.65,0.661,0.654,0.654,0.654,0.658,0.661,0.646,0.643,0.643,0.647,0.656,0.656,0.652,0.648,0.652,0.661,0.649,0.64,0.644,0.645]},{"id":"N4","code":"N4","scen":"Jatuh depan cepat","dur":12.4,"plan":13,"derr":-0.6,"go":6.4,"still":0.06,"react":2.24,"on":8.63,"end":9.36,"desc":0.73,"v":1.44,"hs":1.48,"he":0.66,"edge":0.0,"dark":0.53,"speed":"cepat","speed_ok":true,"status":"warn","verdict":"Layak, ada catatan","note":"Jatuh 0,7 dtk (cepat ✓). Tidak diam sebelum GO.","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.67,0.73,0.8,0.87,0.93,1.0,1.07,1.13,1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8,1.87,1.93,2.0,2.07,2.13,2.2,2.27,2.33,2.4,2.47,2.53,2.6,2.67,2.73,2.8,2.87,2.93,3.0,3.07,3.13,3.2,3.27,3.33,3.4,3.47,3.53,3.6,3.67,3.73,3.8,3.87,3.93,4.0,4.07,4.13,4.2,4.27,4.33,4.4,4.47,4.53,4.6,4.67,4.73,4.8,4.87,4.93,5.0,5.07,5.13,5.2,5.27,5.33,5.4,5.47,5.53,5.6,5.67,5.73,5.8,5.87,5.93,6.0,6.07,6.13,6.2,6.26,6.33,6.4,6.46,6.53,6.6,6.66,6.73,6.8,6.87,6.93,7.0,7.06,7.13,7.2,7.26,7.33,7.4,7.46,7.53,7.6,7.66,7.73,7.8,7.86,7.93,8.0,8.06,8.13,8.2,8.26,8.33,8.4,8.46,8.53,8.6,8.66,8.73,8.8,8.86,8.93,9.0,9.06,9.13,9.2,9.26,9.33,9.4,9.46,9.53,9.6,9.66,9.73,9.8,9.86,9.93,10.0,10.06,10.13,10.2,10.26,10.33,10.4,10.46,10.53,10.6,10.66,10.73,10.8,10.86,10.93,11.0,11.06,11.13,11.2,11.26,11.33,11.4,11.46,11.53,11.6,11.66,11.73,11.8,11.86,11.93,12.0,12.06,12.13,12.2,12.26,12.33,12.4],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.032,1.205,1.235,1.303,1.323,1.521,1.615,1.66,1.681,1.688,1.691,1.696,1.709,1.718,1.72,1.724,1.726,1.735,1.74,1.741,1.748,1.741,1.741,1.741,1.741,1.741,1.734,1.734,1.736,1.736,1.736,1.736,1.742,1.745,1.742,1.745,1.745,1.753,1.759,1.759,1.743,1.544,1.539,1.493,1.448,1.422,1.455,1.476,1.483,1.492,1.492,1.491,1.478,1.474,1.475,1.483,1.48,1.483,1.482,1.483,1.482,1.483,1.48,1.476,1.476,1.481,1.482,1.483,1.493,1.492,1.485,1.484,1.483,1.487,1.484,1.484,1.486,1.484,1.482,1.48,1.481,1.478,1.48,1.48,1.482,1.481,1.481,1.48,1.479,1.479,1.485,1.487,1.475,1.475,1.471,1.467,1.455,1.403,1.398,1.367,1.309,1.244,1.166,1.082,0.998,0.932,0.843,0.815,0.742,0.639,0.634,0.634,0.686,0.691,0.675,0.662,0.662,0.661,0.664,0.661,0.672,0.672,0.666,0.658,0.656,0.656,0.659,0.666,0.659,0.667,0.657,0.658,0.659,0.658,0.663,0.663,0.662,0.66,0.66,0.66,0.654,0.661,0.661,0.657,0.654,0.651,0.651,0.656,0.656,0.65,0.65,0.649,0.664,0.659,0.659]},{"id":"N5","code":"N5","scen":"Jatuh depan pelan","dur":14.42,"plan":15,"derr":-0.58,"go":6.42,"still":1.12,"react":2.02,"on":8.43,"end":9.77,"desc":1.33,"v":1.15,"hs":1.48,"he":0.59,"edge":0.0,"dark":0.51,"speed":"pelan","speed_ok":false,"status":"warn","verdict":"Layak, ada catatan","note":"Jatuh 1,3 dtk, sedikit di bawah batas pelan 1,5 dtk.","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.67,0.73,0.8,0.87,0.93,1.0,1.07,1.13,1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8,1.87,1.93,2.0,2.07,2.13,2.2,2.27,2.33,2.4,2.47,2.53,2.6,2.67,2.73,2.8,2.87,2.93,3.0,3.07,3.13,3.2,3.27,3.33,3.4,3.47,3.53,3.6,3.67,3.73,3.8,3.87,3.94,4.0,4.07,4.13,4.2,4.27,4.33,4.4,4.47,4.53,4.6,4.67,4.73,4.8,4.87,4.93,5.0,5.09,5.13,5.2,5.27,5.33,5.4,5.47,5.53,5.6,5.67,5.73,5.8,5.87,5.93,6.0,6.07,6.13,6.2,6.27,6.33,6.42,6.47,6.53,6.6,6.67,6.73,6.8,6.87,6.95,7.02,7.07,7.13,7.22,7.29,7.33,7.42,7.47,7.53,7.62,7.69,7.73,7.8,7.87,7.93,8.0,8.07,8.15,8.22,8.29,8.35,8.42,8.47,8.53,8.6,8.67,8.73,8.8,8.87,8.95,9.02,9.09,9.15,9.22,9.29,9.35,9.42,9.49,9.55,9.62,9.69,9.75,9.82,9.89,9.95,10.02,10.09,10.15,10.22,10.29,10.35,10.42,10.49,10.55,10.62,10.7,10.75,10.82,10.89,10.95,11.02,11.09,11.15,11.22,11.29,11.35,11.42,11.49,11.55,11.62,11.69,11.75,11.82,11.87,11.93,12.0,12.07,12.13,12.2,12.27,12.33,12.4,12.47,12.55,12.62,12.69,12.75,12.82,12.89,12.95,13.02,13.08,13.15,13.22,13.29,13.35,13.42,13.49,13.55,13.62,13.69,13.75,13.82,13.88,13.95,14.02,14.09,14.15,14.22,14.28,14.35,14.42],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.942,0.907,0.945,0.955,0.965,0.99,1.009,1.043,1.057,1.058,1.044,1.037,1.035,0.997,0.996,0.986,0.983,0.983,0.0,0.0,0.0,1.03,1.044,1.072,1.101,1.149,1.152,1.152,1.141,1.13,1.131,1.14,1.216,1.287,1.33,1.364,1.394,1.458,1.631,1.703,1.737,1.749,1.749,1.745,1.745,1.745,1.749,1.746,1.749,1.746,1.743,1.743,1.743,1.739,1.7,1.587,1.512,1.512,1.528,1.539,1.554,1.551,1.53,1.523,1.52,1.518,1.511,1.508,1.498,1.492,1.49,1.487,1.483,1.482,1.479,1.472,1.475,1.476,1.476,1.48,1.481,1.481,1.481,1.478,1.486,1.486,1.486,1.482,1.482,1.484,1.482,1.476,1.48,1.481,1.481,1.481,1.483,1.482,1.482,1.482,1.48,1.479,1.479,1.481,1.479,1.477,1.475,1.475,1.477,1.478,1.481,1.477,1.475,1.471,1.47,1.469,1.461,1.448,1.441,1.438,1.42,1.391,1.347,1.317,1.265,1.213,1.159,1.107,1.067,1.036,1.007,0.977,0.951,0.933,0.916,0.904,0.9,0.879,0.832,0.716,0.694,0.647,0.664,0.646,0.65,0.649,0.643,0.643,0.643,0.643,0.671,0.67,0.67,0.671,0.7,0.709,0.709,0.714,0.7,0.7,0.711,0.711,0.698,0.698,0.698,0.697,0.718,0.698,0.698,0.697,0.696,0.696,0.675,0.601,0.601,0.593,0.604,0.604,0.602,0.602,0.602,0.597,0.599,0.597,0.597,0.596,0.584,0.582,0.588,0.593,0.587,0.587,0.577,0.593,0.571,0.584,0.587,0.592,0.6,0.6,0.595,0.585,0.584,0.584,0.598,0.598,0.598,0.598,0.565,0.565,0.574]},{"id":"N6","code":"N6","scen":"Jatuh belakang cepat","dur":10.26,"plan":13,"derr":-2.74,"go":4.26,"still":4.26,"react":2.6,"on":6.86,"end":7.7,"desc":0.83,"v":2.78,"hs":1.68,"he":0.66,"edge":0.0,"dark":0.24,"speed":"cepat","speed_ok":true,"status":"warn","verdict":"Layak, ada catatan","note":"Jatuh 0,8 dtk (cepat ✓). Durasi −2,7 dtk karena bug sinkronisasi GO.","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.67,0.73,0.8,0.87,0.93,1.0,1.07,1.13,1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8,1.87,1.93,2.0,2.07,2.13,2.2,2.27,2.33,2.4,2.47,2.53,2.6,2.67,2.73,2.8,2.87,2.93,3.0,3.07,3.13,3.2,3.27,3.33,3.4,3.47,3.53,3.6,3.67,3.73,3.8,3.86,3.93,4.0,4.07,4.13,4.2,4.27,4.33,4.4,4.47,4.53,4.6,4.66,4.73,4.8,4.86,4.93,5.0,5.06,5.13,5.2,5.26,5.33,5.4,5.46,5.53,5.6,5.66,5.73,5.8,5.86,5.93,6.0,6.06,6.13,6.2,6.26,6.33,6.4,6.46,6.53,6.6,6.66,6.73,6.8,6.86,6.93,7.0,7.06,7.13,7.2,7.26,7.33,7.4,7.46,7.53,7.6,7.66,7.73,7.8,7.86,7.93,8.0,8.06,8.13,8.2,8.26,8.33,8.4,8.46,8.53,8.6,8.66,8.73,8.8,8.86,8.93,9.01,9.06,9.13,9.2,9.26,9.33,9.4,9.46,9.53,9.6,9.66,9.73,9.8,9.86,9.93,10.0,10.06,10.13,10.2,10.26],"h":[1.712,1.715,1.717,1.717,1.716,1.716,1.713,1.711,1.705,1.696,1.696,1.695,1.69,1.69,1.69,1.688,1.684,1.684,1.688,1.684,1.686,1.686,1.687,1.685,1.683,1.684,1.683,1.684,1.683,1.683,1.68,1.681,1.681,1.681,1.684,1.678,1.676,1.676,1.678,1.679,1.676,1.676,1.676,1.678,1.678,1.678,1.678,1.679,1.683,1.683,1.683,1.682,1.675,1.674,1.674,1.678,1.676,1.676,1.676,1.675,1.671,1.67,1.67,1.67,1.671,1.671,1.672,1.665,1.665,1.667,1.668,1.668,1.668,1.668,1.668,1.666,1.666,1.668,1.668,1.668,1.668,1.668,1.667,1.665,1.665,1.667,1.667,1.667,1.667,1.67,1.67,1.665,1.669,1.668,1.669,1.669,1.669,1.666,1.666,1.666,1.666,1.639,1.622,1.581,1.519,1.217,1.044,0.97,0.864,0.852,0.791,0.788,0.792,0.814,0.807,0.782,0.738,0.683,0.667,0.664,0.668,0.674,0.682,0.674,0.673,0.675,0.677,0.685,0.69,0.685,0.669,0.666,0.666,0.666,0.673,0.675,0.675,0.662,0.665,0.665,0.666,0.67,0.664,0.664,0.664,0.668,0.658,0.658,0.656,0.673,0.66,0.66,0.66,0.663,0.669]},{"id":"N7","code":"N7","scen":"Jatuh belakang pelan","dur":11.6,"plan":15,"derr":-3.4,"go":3.6,"still":0.57,"react":1.77,"on":5.37,"end":6.1,"desc":0.73,"v":1.91,"hs":1.72,"he":0.73,"edge":0.04,"dark":0.29,"speed":"pelan","speed_ok":false,"status":"bad","verdict":"Ambil ulang","note":"\"Pelan\" tapi turun 0,7 dtk. Durasi −3,4 dtk.","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.67,0.73,0.8,0.87,0.93,1.0,1.07,1.13,1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8,1.87,1.93,2.0,2.07,2.13,2.2,2.27,2.33,2.4,2.47,2.53,2.6,2.67,2.73,2.8,2.87,2.93,3.0,3.07,3.13,3.2,3.27,3.33,3.4,3.47,3.53,3.6,3.67,3.73,3.8,3.87,3.93,4.0,4.07,4.13,4.2,4.27,4.33,4.4,4.47,4.53,4.6,4.67,4.73,4.8,4.87,4.93,5.0,5.07,5.13,5.2,5.27,5.33,5.4,5.47,5.53,5.6,5.67,5.73,5.8,5.87,5.93,6.0,6.07,6.13,6.2,6.27,6.33,6.4,6.47,6.53,6.6,6.67,6.73,6.8,6.87,6.93,7.0,7.07,7.13,7.2,7.27,7.33,7.4,7.47,7.53,7.6,7.67,7.73,7.8,7.87,7.93,8.0,8.07,8.13,8.2,8.27,8.33,8.4,8.47,8.53,8.6,8.67,8.73,8.8,8.87,8.93,9.0,9.07,9.13,9.2,9.27,9.33,9.4,9.47,9.53,9.6,9.67,9.73,9.8,9.87,9.93,10.0,10.07,10.13,10.2,10.29,10.35,10.4,10.47,10.53,10.6,10.67,10.73,10.8,10.87,10.95,11.0,11.07,11.13,11.2,11.27,11.33,11.4,11.47,11.53,11.6],"h":[0.0,1.303,1.333,1.344,1.394,1.442,1.654,1.713,1.718,1.726,1.733,1.737,1.75,1.754,1.759,1.759,1.756,1.756,1.764,1.765,1.762,1.757,1.761,1.752,1.751,1.748,1.75,1.753,1.751,1.747,1.736,1.725,1.722,1.71,1.71,1.715,1.718,1.721,1.718,1.716,1.714,1.716,1.725,1.727,1.719,1.717,1.719,1.713,1.72,1.719,1.719,1.72,1.725,1.726,1.729,1.729,1.728,1.729,1.724,1.724,1.724,1.72,1.72,1.726,1.726,1.726,1.732,1.732,1.73,1.729,1.732,1.732,1.728,1.731,1.731,1.735,1.737,1.739,1.743,1.743,1.741,1.512,1.481,1.426,1.316,1.208,1.107,1.038,0.979,0.951,0.889,0.883,0.83,0.787,0.78,0.782,0.789,0.819,0.819,0.819,0.809,0.802,0.78,0.755,0.722,0.72,0.72,0.713,0.712,0.712,0.714,0.729,0.721,0.722,0.731,0.728,0.728,0.721,0.723,0.723,0.716,0.712,0.712,0.721,0.718,0.713,0.716,0.722,0.726,0.727,0.721,0.711,0.711,0.726,0.725,0.723,0.726,0.723,0.716,0.716,0.72,0.72,0.718,0.717,0.717,0.723,0.724,0.718,0.718,0.718,0.717,0.717,0.713,0.712,0.703,0.703,0.711,0.713,0.724,0.724,0.724,0.735,0.735,0.735,0.74,0.74,0.737,0.732,0.736,0.738,0.734,0.734,0.732,0.736,0.736]},{"id":"N7_RETRY1","code":"N7","scen":"Jatuh belakang pelan","dur":10.33,"plan":15,"derr":-4.67,"go":2.33,"still":0.13,"react":3.1,"on":5.43,"end":5.96,"desc":0.53,"v":2.81,"hs":1.84,"he":0.78,"edge":0.07,"dark":0.1,"speed":"pelan","speed_ok":false,"status":"bad","verdict":"Ambil ulang","note":"\"Pelan\" tapi turun 0,5 dtk. Kamera sedikit bergeser.","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.66,0.73,0.8,0.86,0.93,1.0,1.06,1.13,1.2,1.27,1.33,1.4,1.46,1.53,1.6,1.67,1.73,1.8,1.86,1.93,2.0,2.06,2.13,2.2,2.26,2.33,2.4,2.46,2.53,2.6,2.66,2.73,2.8,2.86,2.93,3.0,3.06,3.13,3.2,3.26,3.33,3.4,3.46,3.53,3.6,3.66,3.73,3.8,3.86,3.93,4.0,4.06,4.13,4.2,4.26,4.33,4.4,4.46,4.53,4.6,4.66,4.73,4.8,4.86,4.93,5.0,5.06,5.13,5.2,5.26,5.33,5.4,5.46,5.53,5.6,5.66,5.73,5.8,5.86,5.93,6.0,6.06,6.13,6.2,6.26,6.33,6.4,6.46,6.53,6.6,6.66,6.73,6.8,6.86,6.93,7.0,7.06,7.13,7.2,7.26,7.33,7.4,7.46,7.53,7.6,7.66,7.73,7.8,7.86,7.93,8.0,8.06,8.13,8.2,8.26,8.33,8.4,8.46,8.53,8.6,8.66,8.73,8.8,8.86,8.93,9.0,9.06,9.13,9.2,9.26,9.33,9.4,9.46,9.53,9.6,9.66,9.73,9.8,9.86,9.93,10.0,10.06,10.13,10.2,10.26,10.33],"h":[0.0,0.0,0.0,1.306,1.335,1.403,1.454,1.483,1.507,1.542,1.586,1.725,1.778,1.794,1.813,1.818,1.831,1.832,1.84,1.845,1.846,1.842,1.839,1.839,1.844,1.844,1.845,1.849,1.853,1.86,1.862,1.86,1.856,1.857,1.854,1.854,1.851,1.85,1.847,1.848,1.848,1.851,1.851,1.851,1.849,1.848,1.848,1.851,1.85,1.849,1.849,1.849,1.849,1.849,1.847,1.845,1.844,1.843,1.842,1.844,1.844,1.844,1.842,1.842,1.844,1.844,1.844,1.845,1.842,1.842,1.843,1.842,1.842,1.841,1.843,1.843,1.843,1.845,1.847,1.852,1.841,1.799,1.724,1.613,1.253,1.162,1.087,1.01,0.947,0.889,0.848,0.845,0.852,0.852,0.808,0.784,0.776,0.776,0.78,0.777,0.776,0.775,0.775,0.791,0.792,0.792,0.792,0.783,0.783,0.789,0.789,0.792,0.787,0.787,0.778,0.788,0.789,0.787,0.787,0.782,0.782,0.787,0.787,0.787,0.789,0.789,0.784,0.784,0.784,0.782,0.779,0.781,0.781,0.781,0.783,0.785,0.783,0.784,0.784,0.774,0.773,0.791,0.802,0.803,0.787,0.78,0.784,0.769,0.772,0.779,0.778,0.778,0.78,0.781,0.781,0.778]},{"id":"N8a","code":"N8a","scen":"Jatuh samping cepat","dur":12.43,"plan":13,"derr":-0.57,"go":6.43,"still":0.03,"react":-0.4,"on":6.03,"end":8.63,"desc":2.6,"v":1.91,"hs":1.68,"he":0.53,"edge":0.09,"dark":0.32,"speed":"cepat","speed_ok":null,"status":"warn","verdict":"Layak, ada catatan","note":"Condong ±2 dtk, lalu jatuh cepat. Masih bergerak saat GO.","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.67,0.73,0.8,0.87,0.93,1.0,1.07,1.13,1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8,1.87,1.93,2.0,2.07,2.13,2.2,2.27,2.33,2.4,2.47,2.53,2.6,2.67,2.73,2.8,2.87,2.93,3.0,3.07,3.13,3.2,3.27,3.33,3.4,3.47,3.53,3.6,3.67,3.73,3.8,3.87,3.93,4.0,4.07,4.13,4.2,4.27,4.33,4.4,4.47,4.53,4.6,4.67,4.73,4.8,4.87,4.93,5.0,5.07,5.13,5.2,5.27,5.33,5.4,5.46,5.53,5.6,5.67,5.73,5.8,5.87,5.93,6.0,6.07,6.13,6.2,6.27,6.33,6.4,6.46,6.53,6.6,6.66,6.73,6.8,6.86,6.93,7.0,7.06,7.13,7.2,7.26,7.33,7.4,7.46,7.53,7.6,7.66,7.73,7.8,7.87,7.93,8.0,8.06,8.13,8.2,8.26,8.33,8.4,8.46,8.53,8.6,8.66,8.73,8.8,8.86,8.93,9.0,9.06,9.13,9.2,9.26,9.33,9.4,9.46,9.53,9.6,9.66,9.73,9.8,9.86,9.93,10.0,10.06,10.13,10.2,10.26,10.33,10.4,10.46,10.53,10.6,10.66,10.73,10.8,10.86,10.93,11.01,11.06,11.13,11.2,11.26,11.33,11.4,11.46,11.53,11.6,11.66,11.73,11.8,11.86,11.93,12.0,12.06,12.13,12.2,12.26,12.33,12.4],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.103,1.219,1.277,1.344,1.444,1.623,1.7,1.727,1.73,1.735,1.744,1.751,1.75,1.748,1.749,1.752,1.759,1.764,1.764,1.764,1.758,1.754,1.754,1.747,1.743,1.739,1.739,1.736,1.735,1.733,1.733,1.733,1.731,1.731,1.732,1.722,1.72,1.72,1.716,1.716,1.726,1.726,1.727,1.723,1.723,1.721,1.721,1.7,1.705,1.709,1.713,1.709,1.712,1.702,1.693,1.693,1.686,1.691,1.686,1.685,1.685,1.665,1.685,1.685,1.683,1.68,1.522,1.458,1.447,1.447,1.468,1.468,1.442,1.48,1.484,1.487,1.487,1.494,1.493,1.493,1.49,1.497,1.495,1.489,1.495,1.497,1.497,1.495,1.492,1.492,1.496,1.484,1.434,1.308,1.3,1.27,1.183,1.176,1.154,1.106,0.974,0.862,0.731,0.685,0.647,0.601,0.606,0.623,0.606,0.555,0.541,0.533,0.535,0.532,0.528,0.528,0.531,0.529,0.527,0.529,0.529,0.525,0.525,0.521,0.522,0.529,0.529,0.527,0.527,0.526,0.534,0.531,0.531,0.531,0.525,0.525,0.526,0.524,0.525,0.525,0.524,0.523,0.522,0.526,0.527,0.529,0.529,0.528,0.526,0.525,0.531,0.527,0.529,0.529,0.529,0.528,0.522,0.522,0.523,0.525,0.527,0.529]},{"id":"N8b","code":"N8b","scen":"Jatuh samping pelan","dur":13.59,"plan":15,"derr":-1.41,"go":5.59,"still":1.95,"react":1.25,"on":6.83,"end":8.07,"desc":1.23,"v":1.79,"hs":1.71,"he":0.52,"edge":0.32,"dark":0.31,"speed":"pelan","speed_ok":false,"status":"bad","verdict":"Ambil ulang","note":"\"Pelan\" tapi turun 1,2 dtk. Tubuh menyentuh tepi area valid (edge 0,32).","t":[0.0,0.07,0.13,0.2,0.27,0.33,0.4,0.47,0.53,0.6,0.67,0.73,0.8,0.87,0.93,1.0,1.07,1.13,1.2,1.27,1.33,1.4,1.47,1.53,1.6,1.67,1.73,1.8,1.87,1.93,2.0,2.07,2.13,2.2,2.27,2.33,2.4,2.47,2.53,2.6,2.67,2.74,2.8,2.87,2.93,3.0,3.07,3.13,3.2,3.27,3.33,3.4,3.47,3.53,3.6,3.67,3.73,3.8,3.87,3.93,4.0,4.07,4.13,4.2,4.27,4.33,4.4,4.47,4.53,4.6,4.67,4.73,4.8,4.87,4.93,5.0,5.07,5.13,5.2,5.27,5.33,5.4,5.47,5.53,5.6,5.67,5.73,5.8,5.87,5.93,6.0,6.07,6.13,6.2,6.27,6.33,6.4,6.47,6.53,6.6,6.67,6.73,6.8,6.87,6.93,7.0,7.07,7.13,7.2,7.27,7.33,7.4,7.47,7.53,7.6,7.67,7.73,7.8,7.87,7.93,8.0,8.07,8.13,8.2,8.27,8.33,8.4,8.47,8.53,8.6,8.67,8.73,8.8,8.87,8.93,9.0,9.07,9.13,9.2,9.27,9.33,9.4,9.47,9.53,9.6,9.67,9.73,9.8,9.87,9.93,10.0,10.07,10.13,10.2,10.27,10.33,10.4,10.47,10.53,10.6,10.67,10.75,10.8,10.87,10.93,11.0,11.07,11.13,11.2,11.27,11.33,11.4,11.47,11.53,11.6,11.67,11.73,11.8,11.87,11.93,12.0,12.07,12.13,12.2,12.27,12.33,12.4,12.47,12.53,12.6,12.67,12.73,12.8,12.87,12.93,13.0,13.07,13.13,13.2,13.27,13.33,13.4,13.47,13.53],"h":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.013,1.067,1.334,1.36,1.53,1.645,1.689,1.698,1.698,1.708,1.711,1.719,1.727,1.737,1.738,1.751,1.747,1.73,1.72,1.691,1.664,1.636,1.608,1.608,1.624,1.662,1.678,1.68,1.674,1.674,1.674,1.684,1.689,1.689,1.693,1.702,1.703,1.703,1.7,1.702,1.708,1.708,1.708,1.71,1.708,1.708,1.71,1.72,1.71,1.711,1.71,1.707,1.704,1.701,1.703,1.714,1.718,1.729,1.759,1.76,1.76,1.759,1.769,1.76,1.761,1.77,1.774,1.774,1.774,1.783,1.596,1.585,1.596,1.867,1.869,1.564,1.559,1.544,1.529,1.512,1.487,1.469,1.412,1.305,1.18,1.06,0.969,0.875,0.857,0.786,0.723,0.688,0.658,0.612,0.546,0.543,0.542,0.541,0.546,0.546,0.538,0.538,0.538,0.531,0.528,0.527,0.527,0.524,0.536,0.536,0.533,0.536,0.533,0.53,0.533,0.533,0.519,0.527,0.527,0.53,0.53,0.53,0.54,0.54,0.532,0.528,0.528,0.523,0.528,0.538,0.533,0.533,0.532,0.524,0.513,0.513,0.522,0.522,0.52,0.52,0.52,0.52,0.533,0.533,0.536,0.528,0.531,0.528,0.528,0.529,0.525,0.533,0.525,0.525,0.52,0.524,0.524,0.524,0.529,0.532,0.526,0.522,0.521,0.527,0.528,0.521,0.519,0.52,0.515,0.515,0.512,0.522,0.522,0.519,0.516,0.518]}]};
+const fmt = (x, d=1) => x==null ? '–' : x.toFixed(d).replace('.', ',');
+document.getElementById('m-cam').textContent = `${fmt(DATA.camera.height_m,2)} m · pitch ${fmt(DATA.camera.pitch_deg,0)}°`;
+document.getElementById('m-valid').textContent = `${Math.round(DATA.camera.valid_px_frac*100)}%`;
+
+// table
+const chk = (state, txt) => `<span class="chk ${state}">${txt}</span>`;
+const tb = document.querySelector('#tbl tbody');
+DATA.clips.forEach(c => {
+  const durOk = Math.abs(c.derr) <= 1.5;
+  const stillOk = c.still >= 3;
+  let sp = chk('c-na','–');
+  if (c.speed) sp = c.speed_ok==null ? chk('c-warn','?') : (c.speed_ok ? chk('c-ok','✓') : chk('c-no','✗'));
+  const sptxt = c.speed ? ` <span class="note">${c.speed}</span>` : '';
+  const pill = {ok:'p-ok',warn:'p-warn',bad:'p-bad'}[c.status];
+  tb.insertAdjacentHTML('beforeend', `<tr>
+    <td class="cid">${c.id}</td><td>${c.scen}</td>
+    <td class="num">${fmt(c.dur)} / ${c.plan}</td><td>${durOk?chk('c-ok','✓'):chk('c-no','✗')}</td>
+    <td class="num">${fmt(c.still)} dtk</td><td>${stillOk?chk('c-ok','✓'):chk('c-no','✗')}</td>
+    <td class="num">${c.react==null?'–':fmt(c.react)+' dtk'}</td>
+    <td class="num">${c.desc==null?'–':fmt(c.desc,2)+' dtk'}</td><td>${sp}${sptxt}</td>
+    <td class="num">${fmt(c.hs,2)} → ${fmt(c.he,2)}</td>
+    <td><span class="pill ${pill}">${c.verdict}</span><div class="note">${c.note}</div></td></tr>`);
+});
+
+// small multiples
+const NS = 'http://www.w3.org/2000/svg';
+const W=260, H=120, ml=26, mr=6, mt=8, mb=18;
+const sm = document.getElementById('sm');
+DATA.clips.forEach(c => {
+  const tmax = 17, x = t => ml + (t/tmax)*(W-ml-mr), y = h => mt + (1 - h/2)*(H-mt-mb);
+  const card = document.createElement('div'); card.className='sm';
+  card.innerHTML = `<div class="sm-h"><span class="cid">${c.id}</span><span class="s">${c.scen}</span></div>`;
+  const svg = document.createElementNS(NS,'svg'); svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('role','img'); svg.setAttribute('aria-label',`Tinggi tubuh ${c.id}: berdiri ${fmt(c.hs,2)} m, akhir ${fmt(c.he,2)} m`);
+  let g = '';
+  [0,0.5,1,1.5,2].forEach(h => { g += `<line class="gl" x1="${ml}" x2="${W-mr}" y1="${y(h)}" y2="${y(h)}"/>`; if (h%1===0) g += `<text class="ax" x="${ml-4}" y="${y(h)+3}" text-anchor="end">${h}</text>`; });
+  [0,5,10,15].forEach(t => g += `<text class="ax" x="${x(t)}" y="${H-5}" text-anchor="middle">${t}s</text>`);
+  if (c.on!=null) g += `<rect class="fallband" x="${x(c.on)}" y="${mt}" width="${Math.max(1.5,x(c.end)-x(c.on))}" height="${H-mt-mb}"/>`;
+  g += `<line class="go" x1="${x(c.go)}" x2="${x(c.go)}" y1="${mt}" y2="${H-mb}"/><text class="goL" x="${x(c.go)+3}" y="${mt+8}">GO</text>`;
+  let d=''; c.t.forEach((t,i)=>{ if (c.h[i]>0) d += (d && c.h[i-1]>0 ? 'L':'M') + x(t).toFixed(1)+','+y(c.h[i]).toFixed(1); });
+  g += `<path class="hline" d="${d}"/>`;
+  g += `<line class="cross" x1="0" x2="0" y1="${mt}" y2="${H-mb}" visibility="hidden"/><rect x="${ml}" y="${mt}" width="${W-ml-mr}" height="${H-mt-mb}" fill="transparent"/>`;
+  svg.innerHTML = g; card.appendChild(svg);
+  const tip = document.createElement('div'); tip.className='tip'; tip.hidden = true; card.appendChild(tip);
+  const cross = svg.querySelector('.cross');
+  svg.addEventListener('pointermove', e => {
+    const r = svg.getBoundingClientRect(); const sx = (e.clientX-r.left)/r.width*W;
+    const t = (sx-ml)/(W-ml-mr)*tmax; if (t<0 || t>c.t[c.t.length-1]) { tip.hidden=true; cross.setAttribute('visibility','hidden'); return; }
+    let i = 0; while (i < c.t.length-1 && c.t[i] < t) i++;
+    cross.setAttribute('x1',x(c.t[i])); cross.setAttribute('x2',x(c.t[i])); cross.setAttribute('visibility','visible');
+    tip.hidden=false; tip.textContent = `${fmt(c.t[i])} dtk · ${c.h[i]>0?fmt(c.h[i],2)+' m':'tak ada orang'}`;
+    tip.style.left = (x(c.t[i])/W*r.width + svg.offsetLeft)+'px'; tip.style.top = (svg.offsetTop + y(Math.max(c.h[i],0.2))/H*r.height)+'px';
+  });
+  svg.addEventListener('pointerleave', () => { tip.hidden=true; cross.setAttribute('visibility','hidden'); });
+  sm.appendChild(card);
+});
+
+// descent chart
+(function(){
+  const rows = DATA.clips.filter(c => c.desc!=null);
+  const W=760, rh=30, mt=34, ml=150, mr=40, H=mt+rows.length*rh+26, xmax=4;
+  const x = s => ml + s/xmax*(W-ml-mr);
+  let g = `<rect class="bandc" x="${x(0)}" y="${mt-8}" width="${x(1)-x(0)}" height="${rows.length*rh+8}"/>`;
+  g += `<rect class="bandp" x="${x(1.5)}" y="${mt-8}" width="${x(3.5)-x(1.5)}" height="${rows.length*rh+8}"/>`;
+  g += `<text class="bandL lblc" x="${x(0.5)}" y="${mt-14}" text-anchor="middle">cepat ≤ 1 dtk</text>`;
+  g += `<text class="bandL lblp" x="${x(2.5)}" y="${mt-14}" text-anchor="middle">pelan 1,5–3,5 dtk</text>`;
+  [0,1,2,3,4].forEach(s => g += `<line class="gl" x1="${x(s)}" x2="${x(s)}" y1="${mt-8}" y2="${mt+rows.length*rh}"/><text class="ax" x="${x(s)}" y="${H-8}" text-anchor="middle">${s} dtk</text>`);
+  rows.forEach((c,i) => {
+    const cy = mt + i*rh + rh/2;
+    const cls = c.speed_ok==null ? 'mk-na' : (c.speed_ok ? 'mk-ok' : 'mk-bad');
+    g += `<text class="rowL" x="8" y="${cy-1}">${c.id}</text><text class="rowS" x="8" y="${cy+11}">${c.scen}</text>`;
+    g += `<line class="gl" x1="${x(0)}" x2="${x(c.desc)}" y1="${cy}" y2="${cy}"/>`;
+    g += `<circle class="${cls}" cx="${x(c.desc)}" cy="${cy}" r="6"><title>${c.id}: ${fmt(c.desc,2)} dtk</title></circle>`;
+    g += `<text class="valL" x="${x(c.desc)+10}" y="${cy+4}">${fmt(c.desc,2)}</text>`;
+  });
+  const s = document.getElementById('dsvg'); s.setAttribute('viewBox',`0 0 ${W} ${H}`); s.innerHTML = g;
+})();
+</script>

@@ -23,3 +23,11 @@ __pycache__/
 build/
 install/
 log/
+# Dataset rosbag (MCAP) - terlalu besar untuk git, backup di Drive/Pi
+# Folder sesi rekaman, mis. P1_R1_Nanas/, P2_R1_.../
+/P[0-9]*_R[0-9]*/
+/P[0-9]*_R[0-9]*_*/
+# Semua bag MCAP baru (archive/rosbag2_2026_03_10-18_07_48 sudah ditrack sebelumnya, tetap ada)
+*.mcap
+# Hasil ekstraksi dataset
+/dataset_tof_fall/

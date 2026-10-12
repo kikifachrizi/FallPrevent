@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Rekam 9 klip (N1..N8b) untuk 1 partisipan, 1 rep.
-# Pakai: ./run_rep.sh <partisipan> <rep>
-# Contoh: ./run_rep.sh P1 1      -> P1_R1_N1 ... P1_R1_N8b (urutan tetap N1 -> N8b)
+# Pakai: ./run_rep.sh <partisipan> <rep> [fwd|rev]
+# Contoh: ./run_rep.sh P1 1 fwd  -> P1_R1_N1 ... P1_R1_N8b
+#         ./run_rep.sh P1 2 rev  -> P1_R2_N8b ... P1_R2_N1 (Skenario 2.3: rep 2 urutan dibalik)
 # Urutan lain: lewati klip dengan `s`, atau rekam klip tertentu langsung dengan rec_clip.sh.
 # Tiap klip: Enter = mulai, s = lewati, q = keluar. Setelah rekam ada validasi otomatis
 # + pertanyaan "valid?" (cek visual/aksi). Jika n: bag diganti nama _x1, _x2, ... dan slot diulang (maks 3x).
@@ -9,10 +10,16 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 source "$HERE/config.sh"
 
-P="${1:?partisipan, mis. P1}"; R="${2:?rep, mis. 1}"
+P="${1:?partisipan, mis. P1}"; R="${2:?rep, mis. 1}"; ORDER="${3:-fwd}"
 
 # format: "<kode> <detik_aksi>"
 CLIPS=("N1 5" "N2 5" "N3 3" "N4 1" "N5 3" "N6 1" "N7 3" "N8a 1" "N8b 3")
+case "$ORDER" in
+  fwd) ;;
+  rev) for ((i=${#CLIPS[@]}-1; i>=0; i--)); do REVD+=("${CLIPS[$i]}"); done; CLIPS=("${REVD[@]}") ;;
+  *) echo "Urutan harus fwd atau rev"; exit 1 ;;
+esac
+echo "Rep ${R} ${P}, urutan ${ORDER}: $(for e in "${CLIPS[@]}"; do printf '%s ' "${e%% *}"; done)"
 
 mkdir -p "$DATA_DIR"
 for entry in "${CLIPS[@]}"; do
@@ -20,7 +27,7 @@ for entry in "${CLIPS[@]}"; do
   name="${P}_R${R}_${code}"
   tries=0
   while :; do
-    read -r -p ">> Siap ${name} (aksi ${act} dtk). Enter=mulai, s=lewati, q=keluar: " ans
+    read -r -p ">> Siap ${name} (aksi ${act} dtk). Partisipan SUDAH diam di posisi? Enter=mulai, s=lewati, q=keluar: " ans
     [ "$ans" = "q" ] && exit 0
     [ "$ans" = "s" ] && break
     "$HERE/rec_clip.sh" "$name" "$act" || { echo "rec_clip gagal; periksa pesan di atas."; continue; }
