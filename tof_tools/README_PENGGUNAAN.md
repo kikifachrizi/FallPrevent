@@ -38,7 +38,7 @@ ros2 run arducam_rclpy_tof_pointcloud tof_pointcloud
 **Terminal 2: cek topik**
 ```bash
 cd ~/tof_tools
-export ROS_DOMAIN_ID=7
+export ROS_DOMAIN_ID=42
 ./check_topics.sh
 ```
 `config.sh` sudah terisi dari pilot P1_R1 (`TOPIC_DEPTH=/depth_frame`, `TOPIC_CLOUD=/point_cloud`, `REC_CLOUD=0`, `FPS_NOMINAL=30`, intrinsik). Ubah hanya bila output berbeda. Yang dilihat: panjang data `/depth_frame` harus 43200 (180×240), hz sekitar 30, dan jumlah level nilai unik. Bila level unik < 200 atau satu nilai > 15%, depth terkuantisasi: cek mode jarak dan filter driver, lalu catat di `sessions.csv`.

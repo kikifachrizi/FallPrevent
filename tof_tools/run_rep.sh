@@ -2,7 +2,7 @@
 # Rekam 9 klip (N1..N8b) untuk 1 partisipan, 1 rep.
 # Pakai: ./run_rep.sh <partisipan> <rep> [fwd|rev]
 # Contoh: ./run_rep.sh P1 1 fwd  -> P1_R1_N1 ... P1_R1_N8b
-#         ./run_rep.sh P1 2 rev  -> P1_R2_N8b ... P1_R2_N1 (Skenario 2.3: rep 2 urutan dibalik)
+#         ./run_rep.sh P1 2 rev  -> P1_R2_N8b ... P1_R2_N1 (opsional; Skenario: rep 2 tetap N1 -> N8b)
 # Urutan lain: lewati klip dengan `s`, atau rekam klip tertentu langsung dengan rec_clip.sh.
 # Tiap klip: Enter = mulai, s = lewati, q = keluar. Setelah rekam ada validasi otomatis
 # + pertanyaan "valid?" (cek visual/aksi). Jika n: bag diganti nama _x1, _x2, ... dan slot diulang (maks 3x).

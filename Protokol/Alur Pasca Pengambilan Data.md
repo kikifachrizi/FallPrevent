@@ -63,4 +63,4 @@ Durasi rencana: N1/N2 17 dtk, N3/N5/N7/N8b 15 dtk, N4/N6/N8a 13 dtk (2 init + 5 
 
 ## Setup Pi
 
-Lihat [[Setup Raspi 5 Arducam ToF]]: `ROS_DOMAIN_ID=7`, driver `arducam_rclpy_tof_pointcloud`, `ros2 bag record /point_cloud /depth_frame`, Foxglove bridge di port 9090 (matikan saat merekam).
+Lihat [[Setup Raspi 5 Arducam ToF]]: `ROS_DOMAIN_ID=42`, driver `arducam_rclpy_tof_pointcloud`, `ros2 bag record /point_cloud /depth_frame`, Foxglove bridge di port 9090 (matikan saat merekam).

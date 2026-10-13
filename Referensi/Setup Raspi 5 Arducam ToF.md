@@ -1,6 +1,6 @@
 # Panduan Arducam ToF: ROS 2, Foxglove, dan Rekam Data
 
-	Panduan ini berdasarkan history terminal Raspberry Pi dan kode publisher lokal. Setup memakai ROS 2 Jazzy dengan `ROS_DOMAIN_ID=7`. History mencatat perintah yang pernah dijalankan, bukan bukti bahwa setiap perintah berhasil.
+	Panduan ini berdasarkan history terminal Raspberry Pi dan kode publisher lokal. Setup memakai ROS 2 Jazzy dengan `ROS_DOMAIN_ID=42`. History mencatat perintah yang pernah dijalankan, bukan bukti bahwa setiap perintah berhasil.
 
 ## 1. Jalankan kamera di Raspberry Pi
 ```bash
@@ -11,14 +11,14 @@ source /opt/ros/jazzy/setup.bash
 
 source install/setup.bash
 
-export ROS_DOMAIN_ID=7
+export ROS_DOMAIN_ID=42
 
 ros2 run arducam_rclpy_tof_pointcloud tof_pointcloud
 
 ```
 
 Biarkan terminal ini berjalan selama menampilkan atau merekam data.  
-Domain sebelumnya pernah memakai `42`, tetapi konfigurasi `.bashrc` saat ini memakai `7`.
+Domain yang dipakai PC dan Pi adalah `42` (dikonfirmasi 13 Okt 2026). Bila `.bashrc` Pi masih berisi `7`, ganti ke `42`; domain berbeda membuat PC tidak melihat topik Pi.
 Jika muncul error izin akses kamera, hentikan percobaan sebelumnya, lalu jalankan dari terminal yang sama:
 ```bash
 
@@ -32,7 +32,7 @@ Buka terminal lain di Raspberry Pi:
 
 source /opt/ros/jazzy/setup.bash
 
-export ROS_DOMAIN_ID=7
+export ROS_DOMAIN_ID=42
 
 ros2 topic list
 
@@ -54,7 +54,7 @@ Dengan kamera tetap berjalan, buka terminal lain di Raspberry Pi:
 
 source /opt/ros/jazzy/setup.bash
 
-export ROS_DOMAIN_ID=7
+export ROS_DOMAIN_ID=42
 
 ros2 run foxglove_bridge foxglove_bridge --ros-args -p port:=9090
 
@@ -86,7 +86,7 @@ Dengan kamera tetap berjalan, buka terminal lain:
 
 source /opt/ros/jazzy/setup.bash
 
-export ROS_DOMAIN_ID=7
+export ROS_DOMAIN_ID=42
 
 ros2 bag record -o ~/rekaman_tof_baru /point_cloud /depth_frame
 
@@ -110,7 +110,7 @@ Perintah playback yang pernah digunakan:
 
 source /opt/ros/jazzy/setup.bash
 
-export ROS_DOMAIN_ID=7
+export ROS_DOMAIN_ID=42
 
 cd ~/record_data_thesis_nanas/baseline
 

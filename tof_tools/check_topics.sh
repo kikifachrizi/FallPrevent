@@ -2,7 +2,7 @@
 # Cek topik driver. Jalankan SETELAH driver hidup (di terminal lain).
 # Pakai: ./check_topics.sh
 source /opt/ros/jazzy/setup.bash 2>/dev/null || true
-[ -n "${ROS_DOMAIN_ID:-}" ] && echo "ROS_DOMAIN_ID=$ROS_DOMAIN_ID" || echo "PERINGATAN: ROS_DOMAIN_ID belum diset (Pi memakai 7, lihat Setup Raspi)"
+[ -n "${ROS_DOMAIN_ID:-}" ] && echo "ROS_DOMAIN_ID=$ROS_DOMAIN_ID" || echo "PERINGATAN: ROS_DOMAIN_ID belum diset (PC dan Pi memakai 42, lihat Setup Raspi)"
 
 echo "=== Semua topik ==="
 ros2 topic list -t

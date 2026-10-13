@@ -127,17 +127,17 @@ def main():
         refs = sorted((p for p in bags.iterdir() if p.is_dir() and "REF" in p.name), key=lambda p: p.stat().st_mtime)
         refname = refs[-1].name if refs else None
     if refname and refname != a.name:
-        cache = data_dir / "ref_cache" / f"{refname}_v3.npz"
+        cache = data_dir / "ref_cache" / f"{refname}_v4.npz"
         if cache.exists():
             z = np.load(cache)
             bg, vrate, bstd, nref = z["bg"], z["vrate"], z["bstd"], int(z["nref"])
         else:
             _, R = read_depth(bags / refname)
-            bg, vrate, bstd, nref = np.nanpercentile(R, 85, 0), np.isfinite(R).mean(0), np.nanstd(R, 0), len(R)
+            bg, vrate, bstd, nref = np.nanmedian(R, 0), np.isfinite(R).mean(0), np.nanstd(R, 0), len(R)
             cache.parent.mkdir(parents=True, exist_ok=True)
             np.savez_compressed(cache, bg=bg, vrate=vrate, bstd=bstd, nref=nref)
-        # Latar = persentil-85 (bukan median): noise depth ~±11 cm, jadi terhadap median banyak piksel lantai
-        # sesekali tampak > 15 cm lebih dekat dan ikut tersegmentasi sebagai tubuh.
+        # Latar = median REF. Persentil yang lebih tinggi menggeser bidang lantai menjauh (~14 cm untuk noise
+        # ±11 cm) sehingga semua tinggi ikut terbaca lebih tinggi. Mode tanpa REF di bawah punya bias itu.
         thr = 0.15
         print(f"Latar   : REF {refname} ({nref} frame, noise median {np.nanmedian(bstd[vrate > 0.3]) * 100:.0f} cm)")
         if nref < 150:
