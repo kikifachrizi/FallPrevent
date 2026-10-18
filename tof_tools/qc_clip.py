@@ -34,6 +34,9 @@ FX, FY, CX, CY = 190.92, 191.25, 120.0, 90.0
 CODES = {  # kode: (detik aksi, kelas kecepatan atau None)
     "N1": (5, None), "N2": (5, None), "N3": (3, None), "N4": (1, "cepat"), "N5": (3, "pelan"),
     "N6": (1, "cepat"), "N7": (3, "pelan"), "N8a": (1, "cepat"), "N8b": (3, "pelan"),
+    # set kedua (Skenario_Uji_HN_OL.md): HN tidak jatuh; OL*F jatuh cepat, OL*N duduk di lantai
+    "HN1": (3, None), "HN2": (4, None), "HN3": (6, None), "HN4": (3, None), "HN5": (1, None),
+    **{f"OL{i}F": (1, "cepat") for i in range(1, 5)}, **{f"OL{i}N": (4, None) for i in range(1, 5)},
 }
 
 
@@ -112,7 +115,7 @@ def main():
     bags = Path(a.bags).expanduser() if a.bags else data_dir / "bags"
     code = a.name.split("_")[-1]
     code = re.sub(r"_?(x\d+|RETRY\d+)$", "", code)
-    m = re.search(r"_(N\d+[ab]?)(?:_|$)", a.name)
+    m = re.search(r"_(N\d+[ab]?|HN\d|OL\d[FN])(?:_|$)", a.name)
     code = m.group(1) if m else code
     act, speed = CODES.get(code, (None, None))
 
@@ -127,7 +130,7 @@ def main():
         refs = sorted((p for p in bags.iterdir() if p.is_dir() and "REF" in p.name), key=lambda p: p.stat().st_mtime)
         refname = refs[-1].name if refs else None
     if refname and refname != a.name:
-        cache = data_dir / "ref_cache" / f"{refname}_v4.npz"
+        cache = data_dir / "ref_cache" / f"{Path(refname).name}_v4.npz"
         if cache.exists():
             z = np.load(cache)
             bg, vrate, bstd, nref = z["bg"], z["vrate"], z["bstd"], int(z["nref"])
@@ -204,6 +207,15 @@ def main():
     hl = np.nanmedian(top[t > t[-1] - 1.5])
     if not np.isnan(hs):
         print(f"Tinggi  : {hs:.2f} m sebelum GO -> {hl:.2f} m di akhir")
+    # Partisipan bisa bangun/keluar sebelum bag selesai (mis. P2_R1_N5_x1): tinggi akhir lalu tinggi lagi dan
+    # jatuhnya tidak terhitung. Pakai posisi terendah setelah GO sebagai acuan bila jauh di bawah tinggi akhir.
+    after = (t > go) & present
+    lo = np.nanpercentile(top[after], 10) if after.sum() > 5 else np.nan
+    rose = bool(speed) and not np.isnan(lo) and (np.isnan(hl) or hl - lo > 0.3)
+    if rose:
+        print(f"          posisi terendah {lo:.2f} m, lalu naik lagi ke {hl:.2f} m (bangun/keluar sebelum klip selesai)")
+        hl = lo
+        flags.append("bangun")
     drop = hs - hl
     if drop > 0.4:
         te = next((i for i in np.where((t > go - 0.5) & (top <= hl + 0.1 * drop))[0]
@@ -226,7 +238,8 @@ def main():
                 good = True
             if not good:
                 flags.append("kecepatan")
-            post = t[-1] - t[te]
+            up = np.where((t > t[te]) & (top > hl + 0.5 * drop))[0]
+            post = (t[up[0]] if rose and len(up) else t[-1]) - t[te]
             print(f"Tahan   : {post:.1f} dtk di posisi akhir -> {'OK' if post >= 3 else 'CEK (minimal 3 dtk)'}")
             if post < 3:
                 flags.append("tahan")
@@ -243,7 +256,9 @@ def main():
         flags.append("tanpa_orang")
     else:
         print(f"Invalid : {dk * 100:.0f}% piksel tubuh tanpa depth (median) -> {'OK' if dk < 0.2 else 'CATAT (IR terserap / pakaian gelap?)'}")
-    if et >= 0.15:
+    if code.startswith("OL"):
+        print("          (OL: tepi dan piksel invalid memang dibuat buruk, tidak dijadikan saran gagal)")
+    elif et >= 0.15:
         flags.append("tepi")
     print(f"SARAN   : {'PASS' if not flags else 'CEK -> ' + ', '.join(flags)}")
     return 0

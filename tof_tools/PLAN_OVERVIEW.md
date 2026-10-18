@@ -115,7 +115,7 @@ Usulan: node `rclpy` (Python) memakai kode offline yang sama; port ke C++ hanya 
 - [ ] 7. Ekstraksi (`extract_clips.py`, sudah mendukung Float32MultiArray dan teruji di bag pilot)
 - [~] 8. Sanity check: kurva tinggi tubuh per klip sudah dibuat untuk pilot (`qc_clip.py`, analisis ulang). Jatuh terlihat berbeda dari berdiri; duduk (N3) mirip jatuh pelan
 
-**Berikutnya (belum dikerjakan):** rancang set HN dan OL, lalu mulai Blok 4–6.
+**Berikutnya:** draf set HN dan OL ada di `Skenario_Uji_HN_OL.md` (13 Okt, belum diuji); keputusan terbuka di Bagian 8 dokumen itu. Lalu mulai Blok 4–6.
 
 ## 5. Log progres
 

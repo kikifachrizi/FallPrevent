@@ -13,4 +13,5 @@ Thesis deteksi jatuh dengan Arducam ToF di kamar mandi. Repo kode: github.com/ki
 
 ## Referensi
 - [[Skenario Uji Baseline 36 Klip]]: protokol lengkap (salinan dari repo)
+- [[Skenario_Uji_HN_OL]]: draf set kedua, Hard Negative (HN1–HN5) dan Observation Limits (OL1–OL4)
 - [[Setup Raspi 5 Arducam ToF]]: menjalankan driver, Foxglove, dan rekam di Pi
